@@ -6,9 +6,6 @@ const cartItemsContainer = document.getElementById('cartItems');
 const itemsCount = document.getElementById('itemsCount');
 const totalAmount = document.getElementById('totalAmount');
 const checkoutBtn = document.getElementById('checkoutBtn');
-const deliveryAddress = document.getElementById('deliveryAddress');
-const deliveryPhone = document.getElementById('deliveryPhone');
-const deliveryComment = document.getElementById('deliveryComment');
 const paymentOptions = document.querySelectorAll('.payment-option');
 
 // Состояние
@@ -58,10 +55,6 @@ function displayProfile(profile) {
   if (profileName) profileName.textContent = profile.name || profile.full_name || 'Без имени';
   if (profileEmail) profileEmail.textContent = profile.email || '';
   if (profilePhone) profilePhone.textContent = profile.phone || 'Не указан';
-  
-  if (profile.phone && deliveryPhone) {
-    deliveryPhone.value = profile.phone;
-  }
 }
 
 // Загрузка корзины
@@ -70,11 +63,13 @@ async function loadCart() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     
     if (!session) {
-      cartItemsContainer.innerHTML = `
-        <div class="text-center text-gray-400 py-8">
-          <p>Войдите в аккаунт для просмотра корзины</p>
-        </div>
-      `;
+      if (cartItemsContainer) {
+        cartItemsContainer.innerHTML = `
+          <div class="text-center text-gray-400 py-8">
+            <p>Войдите в аккаунт для просмотра корзины</p>
+          </div>
+        `;
+      }
       return;
     }
     
@@ -106,16 +101,20 @@ async function loadCart() {
     
   } catch (err) {
     console.error('Ошибка загрузки корзины:', err);
-    cartItemsContainer.innerHTML = `
-      <div class="text-center text-red-400 py-8">
-        <p>Ошибка загрузки корзины</p>
-      </div>
-    `;
+    if (cartItemsContainer) {
+      cartItemsContainer.innerHTML = `
+        <div class="text-center text-red-400 py-8">
+          <p>Ошибка загрузки корзины</p>
+        </div>
+      `;
+    }
   }
 }
 
 // Рендер корзины
 function renderCart() {
+  if (!cartItemsContainer) return;
+  
   if (!cartItems || cartItems.length === 0) {
     cartItemsContainer.innerHTML = `
       <div class="text-center text-gray-400 py-8">
@@ -124,7 +123,7 @@ function renderCart() {
         <a href="/catalog" class="text-purple-400 hover:underline text-sm">Перейти в каталог</a>
       </div>
     `;
-    checkoutBtn.disabled = true;
+    if (checkoutBtn) checkoutBtn.disabled = true;
     return;
   }
   
@@ -168,23 +167,25 @@ function renderCart() {
   });
   
   cartItemsContainer.innerHTML = html;
-  itemsCount.textContent = count;
-  totalAmount.textContent = total.toLocaleString() + ' ₽';
-  checkoutBtn.disabled = false;
+  if (itemsCount) itemsCount.textContent = count;
+  if (totalAmount) totalAmount.textContent = total.toLocaleString() + ' ₽';
+  if (checkoutBtn) checkoutBtn.disabled = false;
 }
 
 // Обработка выбора способа оплаты
-paymentOptions.forEach(option => {
-  option.addEventListener('click', function() {
-    paymentOptions.forEach(opt => opt.classList.remove('active'));
-    this.classList.add('active');
-    const radio = this.querySelector('input[type="radio"]');
-    if (radio) {
-      radio.checked = true;
-      selectedPayment = radio.value;
-    }
+if (paymentOptions && paymentOptions.length > 0) {
+  paymentOptions.forEach(option => {
+    option.addEventListener('click', function() {
+      paymentOptions.forEach(opt => opt.classList.remove('active'));
+      this.classList.add('active');
+      const radio = this.querySelector('input[type="radio"]');
+      if (radio) {
+        radio.checked = true;
+        selectedPayment = radio.value;
+      }
+    });
   });
-});
+}
 
 // Оформление заказа
 async function handleCheckout() {
@@ -202,30 +203,33 @@ async function handleCheckout() {
       return;
     }
     
-    let address = deliveryAddress.value.trim();
-    if (!address) {
-      address = 'г. Санкт-Петербург, ул. Коллонтай, 21к1, 8 подъезд, 1 этаж';
-    }
+    // Адрес самовывоза (фиксированный)
+    const address = 'г. Санкт-Петербург, ул. Коллонтай, 21к1, 8 подъезд, 1 этаж';
     
-    let phone = deliveryPhone.value.trim();
-    if (!phone) {
-      const { data: profile } = await supabaseClient
-        .from('profiles')
-        .select('phone')
-        .eq('id', session.user.id)
-        .single();
-      
-      if (profile?.phone) {
-        phone = profile.phone;
-      } else {
-        alert('Укажите номер телефона для связи');
-        deliveryPhone.focus();
+    // Получаем телефон из профиля
+    let phone = '';
+    const { data: profile } = await supabaseClient
+      .from('profiles')
+      .select('phone')
+      .eq('id', session.user.id)
+      .single();
+    
+    if (profile?.phone) {
+      phone = profile.phone;
+    } else {
+      // Если телефона нет в профиле, запрашиваем
+      phone = prompt('Укажите номер телефона для связи:');
+      if (!phone || phone.trim() === '') {
+        alert('Номер телефона обязателен для оформления заказа');
         return;
       }
+      phone = phone.trim();
     }
     
-    checkoutBtn.disabled = true;
-    checkoutBtn.innerHTML = '<span class="spinner"></span> Обработка...';
+    if (checkoutBtn) {
+      checkoutBtn.disabled = true;
+      checkoutBtn.innerHTML = '<span class="spinner"></span> Обработка...';
+    }
     
     let totalAmount = 0;
     const orderItems = [];
@@ -268,7 +272,7 @@ async function handleCheckout() {
           userId: session.user.id,
           deliveryAddress: address,
           phone: phone,
-          comment: deliveryComment.value || ''
+          comment: ''
         })
       });
       
@@ -337,8 +341,10 @@ async function handleCheckout() {
     console.error('Ошибка оформления заказа:', err);
     alert('❌ Ошибка: ' + (err.message || 'Неизвестная ошибка'));
   } finally {
-    checkoutBtn.disabled = false;
-    checkoutBtn.innerHTML = 'Оформить заказ';
+    if (checkoutBtn) {
+      checkoutBtn.disabled = false;
+      checkoutBtn.innerHTML = 'Оформить заказ';
+    }
   }
 }
 
@@ -353,5 +359,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   
   await loadUserProfile();
   await loadCart();
-  checkoutBtn.addEventListener('click', handleCheckout);
+  if (checkoutBtn) {
+    checkoutBtn.addEventListener('click', handleCheckout);
+  }
 });
