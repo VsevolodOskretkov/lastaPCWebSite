@@ -1,7 +1,6 @@
 let editingId = null
 let isLoadingComputers = false
 
-
 async function checkAdmin() {
   try {
     const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession()
@@ -18,7 +17,7 @@ async function checkAdmin() {
       .single()
 
     if (profileError || !profile || profile.role !== "admin") {
-      alert(" Нет доступа к админ-панели")
+      alert("⛔ Нет доступа к админ-панели")
       location.href = "/index"
       return
     }
@@ -53,7 +52,7 @@ async function loadComputers() {
 
     const { data, error } = await supabaseClient
       .from("computers")
-      .select("id, title, price, image, created_at, published") // только нужные поля
+      .select("id, title, price, image, created_at, published")
       .order("created_at", { ascending: false })
 
     if (error) throw error
@@ -76,8 +75,8 @@ function renderComputersList(computers) {
 
   if (!computers || computers.length === 0) {
     container.innerHTML = `
-      <div class="text-center py-12 text-gray-400">
-         Компьютеры не найдены<br>
+      <div class="text-center py-12 text-gray-400 col-span-full">
+        📦 Компьютеры не найдены<br>
         <button onclick="resetForm()" class="mt-4 text-purple-400 underline">Создать первый компьютер</button>
       </div>
     `
@@ -88,23 +87,29 @@ function renderComputersList(computers) {
 
   computers.forEach(pc => {
     const div = document.createElement('div')
-    div.className = 'bg-[#1a1b1f] border border-gray-800 rounded-2xl p-5 hover:border-gray-700 transition'
+    div.className = 'product-card bg-[#1a1b1f] border border-gray-800 rounded-2xl p-3 hover:border-gray-700 transition'
     div.innerHTML = `
-      <img src="${pc.image || '/src/img/placeholder.webp'}" 
-           loading="lazy"
-           class="w-full h-48 object-cover rounded-xl mb-4"
-           onerror="this.src='/src/img/placeholder.webp'">
-      <h3 class="text-xl mb-2">${escapeHtml(pc.title)}</h3>
-      <p class="text-gray-400 mb-4">${pc.price.toLocaleString("ru-RU")} ₽</p>
-      <div class="flex gap-3">
-        <button onclick="editComputer('${pc.id}')" 
-                class="flex-1 bg-purple-600 py-2 rounded-xl hover:bg-purple-700 transition">
-           Редактировать
-        </button>
-        <button onclick="deleteComputer('${pc.id}')" 
-                class="flex-1 bg-red-600/20 text-red-400 py-2 rounded-xl hover:bg-red-600 hover:text-white transition">
-           Удалить
-        </button>
+      <div class="relative">
+        <img src="${pc.image || '/src/img/placeholder.webp'}" 
+             loading="lazy"
+             class="product-image"
+             alt="${escapeHtml(pc.title)}"
+             onerror="this.src='/src/img/placeholder.webp'">
+        ${!pc.published ? '<span class="absolute top-2 right-2 bg-yellow-600 text-xs px-2 py-1 rounded-full">Черновик</span>' : ''}
+      </div>
+      <div class="mt-3">
+        <h3 class="text-sm font-semibold truncate">${escapeHtml(pc.title)}</h3>
+        <p class="text-purple-400 font-bold text-sm mt-1">${pc.price.toLocaleString("ru-RU")} ₽</p>
+        <div class="flex gap-2 mt-3">
+          <button onclick="editComputer('${pc.id}')" 
+                  class="flex-1 bg-purple-600 text-xs py-1.5 rounded-lg hover:bg-purple-700 transition">
+            ✏️ Редакт.
+          </button>
+          <button onclick="deleteComputer('${pc.id}')" 
+                  class="flex-1 bg-red-600/20 text-red-400 text-xs py-1.5 rounded-lg hover:bg-red-600 hover:text-white transition">
+            🗑️ Удалить
+          </button>
+        </div>
       </div>
     `
     fragment.appendChild(div)
@@ -128,17 +133,15 @@ window.deleteComputer = async function(id) {
 
     alert('✅ Компьютер удален')
     
-    // Очищаем кэш и перезагружаем
     cachedComputers = null
     loadComputers()
     
-    // Если редактировали удаленный компьютер - сбрасываем форму
     if (editingId === id) {
       resetForm()
     }
   } catch (err) {
     console.error("Ошибка удаления:", err)
-    alert(' Ошибка удаления: ' + err.message)
+    alert('❌ Ошибка удаления: ' + err.message)
   }
 }
 
@@ -151,7 +154,6 @@ window.resetForm = function() {
   document.getElementById("fps").value = ""
   document.getElementById("published").checked = true
   
-  // Меняем текст кнопки
   const submitBtn = document.querySelector('#createComputerForm button[type="submit"]')
   if (submitBtn) {
     submitBtn.textContent = '✨ Создать компьютер'
@@ -174,10 +176,9 @@ function generateSlug(title) {
 document.getElementById("createComputerForm")?.addEventListener("submit", async (e) => {
   e.preventDefault()
 
-  // Получаем значения с проверками
   const title = document.getElementById("title")?.value.trim()
   if (!title) {
-    alert(" Введите название компьютера")
+    alert("❌ Введите название компьютера")
     return
   }
 
@@ -194,30 +195,26 @@ document.getElementById("createComputerForm")?.addEventListener("submit", async 
   const windows = document.getElementById("windows")?.value
   const published = document.getElementById("published")?.checked || false
 
-  // Проверка цены
   if (isNaN(price) || price <= 0) {
-    alert(" Введите корректную цену")
+    alert("❌ Введите корректную цену")
     return
   }
 
-  // Обработка features (построчно)
   const featuresText = document.getElementById("features")?.value || ""
   const features = featuresText
     .split("\n")
     .map(f => f.trim())
     .filter(f => f.length > 0)
 
-  // Обработка FPS (формат: "Игра: значение" или "Игра:значение")
   const fpsText = document.getElementById("fps")?.value || ""
   const fps = {}
   fpsText.split("\n").forEach(line => {
-    const [game, value] = line.split(/[:：]/) // поддержка : и ：
+    const [game, value] = line.split(/[:：]/)
     if (game?.trim() && value?.trim()) {
       fps[game.trim()] = value.trim()
     }
   })
 
-  // Авто-генерация slug
   if (!slug) {
     slug = generateSlug(title)
   }
@@ -240,11 +237,10 @@ document.getElementById("createComputerForm")?.addEventListener("submit", async 
     fps
   }
 
-  // Показываем индикатор загрузки
   const submitBtn = e.target.querySelector('button[type="submit"]')
   const originalText = submitBtn?.textContent
   if (submitBtn) {
-    submitBtn.textContent = ' Сохранение...'
+    submitBtn.textContent = '⏳ Сохранение...'
     submitBtn.disabled = true
   }
 
@@ -266,21 +262,18 @@ document.getElementById("createComputerForm")?.addEventListener("submit", async 
 
     if (error) throw error
 
-    alert(editingId ? " Компьютер обновлен" : " Компьютер создан")
+    alert(editingId ? "✅ Компьютер обновлен" : "✅ Компьютер создан")
     
-    // Сбрасываем форму и перезагружаем список
     resetForm()
-    
-    // Очищаем кэш и обновляем список
     cachedComputers = null
     await loadComputers()
 
   } catch (err) {
     console.error("Ошибка:", err)
-    alert(` Ошибка: ${err.message}`)
+    alert(`❌ Ошибка: ${err.message}`)
   } finally {
     if (submitBtn) {
-      submitBtn.textContent = originalText || (editingId ? " Обновить компьютер" : "✨ Создать компьютер")
+      submitBtn.textContent = originalText || (editingId ? "🔄 Обновить компьютер" : "✨ Создать компьютер")
       submitBtn.disabled = false
     }
   }
@@ -299,7 +292,6 @@ window.editComputer = async function(id) {
 
     editingId = id
 
-    // Заполняем форму
     const fields = ['title', 'slug', 'category', 'description', 'short_description', 'price', 'cpu', 'gpu', 'ram', 'storage', 'image', 'windows']
     fields.forEach(field => {
       const el = document.getElementById(field)
@@ -321,17 +313,16 @@ window.editComputer = async function(id) {
         : ""
     }
 
-    // Меняем текст кнопки
     const submitBtn = document.querySelector('#createComputerForm button[type="submit"]')
     if (submitBtn) {
-      submitBtn.textContent = ' Обновить компьютер'
+      submitBtn.textContent = '🔄 Обновить компьютер'
     }
 
     window.scrollTo({ top: 0, behavior: "smooth" })
 
   } catch (err) {
     console.error("Ошибка загрузки компьютера:", err)
-    alert(' Ошибка загрузки данных компьютера')
+    alert('❌ Ошибка загрузки данных компьютера')
   }
 }
 
@@ -362,8 +353,8 @@ function showError() {
   const container = document.getElementById("computersList")
   if (container) {
     container.innerHTML = `
-      <div class="text-center py-12 text-red-400">
-         Ошибка загрузки списка компьютеров<br>
+      <div class="text-center py-12 text-red-400 col-span-full">
+        ❌ Ошибка загрузки списка компьютеров<br>
         <button onclick="location.reload()" class="mt-4 text-purple-400 underline">Повторить</button>
       </div>
     `

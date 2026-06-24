@@ -216,11 +216,10 @@ function displayOrders(orders) {
 
     // Статус заказа
     const statusMap = {
-      'pending': { label: '⏳ Ожидает обработки', color: 'text-yellow-400', bg: 'bg-yellow-400/10', border: 'border-yellow-400/20' },
-      'processing': { label: '🔄 В обработке', color: 'text-blue-400', bg: 'bg-blue-400/10', border: 'border-blue-400/20' },
-      'shipped': { label: '📦 Отправлен', color: 'text-purple-400', bg: 'bg-purple-400/10', border: 'border-purple-400/20' },
-      'delivered': { label: '✅ Доставлен', color: 'text-green-400', bg: 'bg-green-400/10', border: 'border-green-400/20' },
-      'cancelled': { label: '❌ Отменен', color: 'text-red-400', bg: 'bg-red-400/10', border: 'border-red-400/20' }
+      'pending': { label: 'Ожидает обработки', color: 'text-yellow-400', bg: 'bg-yellow-400/10', border: 'border-yellow-400/20' },
+      'processing': { label: 'В обработке', color: 'text-blue-400', bg: 'bg-blue-400/10', border: 'border-blue-400/20' },
+      'shipped': { label: 'Готов', color: 'text-purple-400', bg: 'bg-purple-400/10', border: 'border-purple-400/20' },
+      'cancelled': { label: 'Отменен', color: 'text-red-400', bg: 'bg-red-400/10', border: 'border-red-400/20' }
     }
 
     const status = statusMap[order.status] || statusMap['pending']

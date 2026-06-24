@@ -5,10 +5,39 @@
   <title>Админ панель</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
+  
+  <style>
+    /* Стиль для фото без урезания */
+    .product-image {
+      width: 100%;
+      aspect-ratio: 655 / 763;
+      object-fit: contain;
+      background: #1a1b1f;
+      border-radius: 12px;
+    }
+    
+    /* Уменьшенные карточки */
+    .product-card {
+      max-width: 280px;
+      margin: 0 auto;
+      transition: all 0.3s ease;
+    }
+    
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(139, 92, 246, 0.1);
+    }
+    
+    @media (max-width: 640px) {
+      .product-card {
+        max-width: 100%;
+      }
+    }
+  </style>
 </head>
 
-<body class="bg-black text-white p-10">
+<body class="bg-black text-white p-4 md:p-10">
 
 <h1 class="text-3xl mb-8">Админ панель</h1>
 
@@ -90,13 +119,12 @@
   <p class="text-gray-500 text-xs -mt-2">Пример: CS2: 200 FPS, Valorant: 300 FPS, Dota 2: 150 FPS</p>
 
   <div class="flex items-center gap-4">
-    <input type="checkbox" id="published" class="w-5 h-5">
+    <input type="checkbox" id="published" class="w-5 h-5" checked>
     <label for="published" class="text-gray-300">Опубликовано</label>
   </div>
 
-
-  <button class="bg-purple-600 px-6 py-3 rounded hover:bg-purple-700 transition">
-    Создать ПК
+  <button class="bg-purple-600 px-6 py-3 rounded hover:bg-purple-700 transition w-full md:w-auto">
+    ✨ Создать компьютер
   </button>
 
 </form>
@@ -107,7 +135,7 @@
     Список компьютеров
   </h2>
   
-  <div id="computersList" class="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+  <div id="computersList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
 
   </div>
 
