@@ -99,18 +99,26 @@ div.innerHTML = `
        decoding="async"
        class="h-40 sm:h-48 md:h-60 mx-auto mb-4 md:mb-6 object-contain"
        onerror="this.src='/src/img/placeholder.webp'">
-  <h3 class="tracking-[2px] sm:tracking-[3px] text-xs sm:text-sm mb-2 text-gray-200 text-center">${safeTitle}</h3>
+  <h3 class="tracking-[2px] sm:tracking-[3px] text-xs sm:text-sm mb-2 text-gray-200 text-center truncate px-1">${safeTitle}</h3>
   <p class="text-gray-400 text-xs sm:text-sm mb-3 md:mb-4 text-center">${pc.price.toLocaleString()}₽</p>
   <button onclick="window.location.href='/product?id=${pc.id}'" 
-          class="border border-purple-500 text-purple-400 px-4 sm:px-6 py-2 rounded-lg text-xs sm:text-sm mb-4 md:mb-6 hover:bg-purple-500 hover:text-white transition w-full sm:w-auto">
+          class="border border-purple-500 text-purple-400 px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-sm hover:bg-purple-500 hover:text-white transition w-full sm:w-auto mb-2 md:mb-0">
     Подробнее
   </button>
-  <div class="flex justify-center">
-    <div class="text-[10px] sm:text-[11px] text-gray-400 leading-4 sm:leading-5 space-y-1 sm:space-y-1.5 text-left w-full px-2 sm:px-0">
-      <p>Процессор<br><span class="text-gray-300 text-[11px] sm:text-[13px]">${safeCpu}</span></p>
-      <p>Видеокарта<br><span class="text-gray-300 text-[11px] sm:text-[13px]">${safeGpu}</span></p>
-      <p>Оперативная память<br><span class="text-gray-300 text-[11px] sm:text-[13px]">${safeRam}</span></p>
-      <p>SSD накопитель<br><span class="text-gray-300 text-[11px] sm:text-[13px]">${safeStorage}</span></p>
+  
+  <!-- Характеристики в одну строку на мобильных -->
+  <div class="text-[10px] sm:text-[11px] text-gray-400 leading-4 sm:leading-5 mt-2 md:mt-3 text-center sm:text-left">
+    <p class="hidden sm:block">Процессор: <span class="text-gray-300 text-[11px] sm:text-[13px]">${safeCpu}</span></p>
+    <p class="hidden sm:block">Видеокарта: <span class="text-gray-300 text-[11px] sm:text-[13px]">${safeGpu}</span></p>
+    <p class="hidden sm:block">Оперативная память: <span class="text-gray-300 text-[11px] sm:text-[13px]">${safeRam}</span></p>
+    <p class="hidden sm:block">SSD накопитель: <span class="text-gray-300 text-[11px] sm:text-[13px]">${safeStorage}</span></p>
+    
+    <!-- Компактное отображение на мобильных -->
+    <div class="sm:hidden flex flex-wrap justify-center gap-1">
+      <span class="bg-gray-800 px-2 py-0.5 rounded text-[10px]">${safeCpu}</span>
+      <span class="bg-gray-800 px-2 py-0.5 rounded text-[10px]">${safeGpu}</span>
+      <span class="bg-gray-800 px-2 py-0.5 rounded text-[10px]">${safeRam}</span>
+      <span class="bg-gray-800 px-2 py-0.5 rounded text-[10px]">${safeStorage}</span>
     </div>
   </div>
 `
@@ -133,18 +141,18 @@ function escapeHtml(str) {
     .replace(/'/g, '&#39;')
 }
 
-// Скелетоны загрузки
+// Скелетоны загрузки (адаптивные)
 function showSkeletons() {
   const containers = ['silverContainer', 'goldContainer', 'platinaContainer']
   containers.forEach(id => {
     const container = document.getElementById(id)
     if (container && container.children.length === 0) {
       container.innerHTML = Array(4).fill(`
-        <div class="bg-[#2b2e36] rounded-xl px-6 py-8 animate-pulse">
-          <div class="h-60 bg-gray-700 rounded-lg mx-auto mb-6"></div>
-          <div class="h-4 bg-gray-700 rounded w-32 mx-auto mb-2"></div>
-          <div class="h-4 bg-gray-700 rounded w-24 mx-auto mb-4"></div>
-          <div class="h-8 bg-gray-700 rounded w-28 mx-auto"></div>
+        <div class="bg-[#2b2e36] rounded-xl p-4 sm:p-6 md:px-6 md:py-8 animate-pulse">
+          <div class="h-32 sm:h-48 md:h-60 bg-gray-700 rounded-lg mx-auto mb-3 md:mb-6"></div>
+          <div class="h-3 sm:h-4 bg-gray-700 rounded w-24 sm:w-32 mx-auto mb-1.5 sm:mb-2"></div>
+          <div class="h-3 sm:h-4 bg-gray-700 rounded w-20 sm:w-24 mx-auto mb-3 md:mb-4"></div>
+          <div class="h-7 sm:h-8 bg-gray-700 rounded w-20 sm:w-28 mx-auto"></div>
         </div>
       `).join('')
     }
@@ -157,9 +165,9 @@ function showError() {
     const container = document.getElementById(id)
     if (container) {
       container.innerHTML = `
-        <div class="col-span-full text-center py-12">
-          <p class="text-red-400">❌ Ошибка загрузки данных</p>
-          <button onclick="location.reload()" class="mt-4 text-purple-400 underline">Повторить</button>
+        <div class="col-span-full text-center py-8 sm:py-12">
+          <p class="text-red-400 text-sm sm:text-base">❌ Ошибка загрузки данных</p>
+          <button onclick="location.reload()" class="mt-3 sm:mt-4 text-purple-400 underline text-sm sm:text-base">Повторить</button>
         </div>
       `
     }
@@ -172,8 +180,8 @@ function showEmpty() {
     const container = document.getElementById(id)
     if (container) {
       container.innerHTML = `
-        <div class="col-span-full text-center py-12">
-          <p class="text-gray-400">📭 Компьютеры не найдены</p>
+        <div class="col-span-full text-center py-8 sm:py-12">
+          <p class="text-gray-400 text-sm sm:text-base">📭 Компьютеры не найдены</p>
         </div>
       `
     }
