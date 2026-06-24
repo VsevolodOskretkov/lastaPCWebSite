@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Оформление заказа | LASTA.PC</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
+
+  <style>
+    @font-face {
+      font-family: 'Tektur Regular';
+      src: url('/src/Fonts/Tektur-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    @font-face {
+      font-family: 'Tektur Bold';
+      src: url('/src/Fonts/Tektur-Bold.ttf') format('truetype');
+      font-weight: bold;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    * {
+      color: #ffffff !important;
+    }
+    
+    body {
+      font-family: 'Tektur Regular', monospace, sans-serif;
+      background: #1a1a1a;
+      color: #ffffff;
+    }
+    
+    h1, h2, h3, h4, .font-bold, button, nav a, .tracking-widest {
+      font-family: 'Tektur Bold', monospace, sans-serif;
+      color: #ffffff !important;
+    }
+    
+    .text-xl, .text-5xl, .text-2xl, .text-lg {
+      font-family: 'Tektur Bold', monospace, sans-serif;
+      color: #ffffff !important;
+    }
+
+    /* Стили для карточек - более светлые */
+    .checkout-card {
+      background: linear-gradient(145deg, #2a2a2a, #1f1f1f);
+      border: 1px solid #3a3a3a;
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.3s ease;
+    }
+
+    .checkout-card:hover {
+      border-color: #4a4a4a;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .checkout-card * {
+      color: #ffffff !important;
+    }
+
+    /* Стили для инпутов - более светлые */
+    .checkout-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: #2a2a2a;
+      border: 1px solid #3a3a3a;
+      border-radius: 12px;
+      color: #ffffff !important;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      font-family: 'Tektur Regular', monospace;
+    }
+
+    .checkout-input:focus {
+      outline: none;
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+      background: #333333;
+    }
+
+    .checkout-input::placeholder {
+      color: #9ca3af !important;
+    }
+
+    /* Стили для радио кнопок - более светлые */
+    .payment-option {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      background: #2a2a2a;
+      border: 2px solid #3a3a3a;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .payment-option * {
+      color: #ffffff !important;
+    }
+
+    .payment-option:hover {
+      border-color: #5a5a5a;
+      background: #333333;
+    }
+
+    .payment-option.active {
+      border-color: #8b5cf6;
+      background: rgba(139, 92, 246, 0.1);
+    }
+
+    .payment-option input[type="radio"] {
+      display: none;
+    }
+
+    .payment-option .radio-circle {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #6b7280;
+      border-radius: 50%;
+      margin-right: 12px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .payment-option.active .radio-circle {
+      border-color: #8b5cf6;
+    }
+
+    .payment-option.active .radio-circle::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px;
+      height: 10px;
+      background: #8b5cf6;
+      border-radius: 50%;
+    }
+
+    /* Анимация загрузки */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.1);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+      .checkout-card {
+        padding: 16px;
+      }
+      
+      .payment-option {
+        padding: 12px;
+      }
+    }
+
+    /* Дополнительные стили для более светлых оттенков */
+    .text-gray-300 {
+      color: #d1d5db !important;
+    }
+    
+    .text-gray-400 {
+      color: #b0b8c4 !important;
+    }
+    
+    .text-gray-500 {
+      color: #9ca3af !important;
+    }
+    
+    .text-gray-600 {
+      color: #8b929e !important;
+    }
+
+    .text-purple-400, .text-purple-500 {
+      color: #a78bfa !important;
+    }
+
+    .text-green-500 {
+      color: #34d399 !important;
+    }
+
+    .text-red-400 {
+      color: #f87171 !important;
+    }
+
+    /* Границы - более светлые */
+    .border-gray-800 {
+      border-color: #333333 !important;
+    }
+    
+    .border-gray-700 {
+      border-color: #3a3a3a !important;
+    }
+
+    /* Фоны - более светлые */
+    .bg-gray-900\/50 {
+      background: rgba(42, 42, 42, 0.8) !important;
+    }
+    
+    .bg-gray-800 {
+      background: #2a2a2a !important;
+    }
+    
+    .bg-gray-700 {
+      background: #333333 !important;
+    }
+
+    /* Стили для ссылок */
+    a {
+      color: #a78bfa !important;
+    }
+
+    a:hover {
+      color: #c4b5fd !important;
+    }
+
+    /* Стили для SVG иконок */
+    svg {
+      color: #ffffff !important;
+    }
+
+    .text-purple-500 svg {
+      color: #a78bfa !important;
+    }
+
+    /* Стили для заголовка - более светлый */
+    header {
+      background: rgba(26, 26, 26, 0.8) !important;
+      border-bottom-color: #333333 !important;
+    }
+    
+    header * {
+      color: #ffffff !important;
+    }
+
+    header a {
+      color: #ffffff !important;
+    }
+
+    header .text-gray-300 {
+      color: #d1d5db !important;
+    }
+
+    /* Стили для кнопки */
+    .bg-purple-600 {
+      background: #7c3aed !important;
+    }
+
+    .bg-purple-600:hover {
+      background: #6d28d9 !important;
+    }
+
+    .bg-purple-600 * {
+      color: #ffffff !important;
+    }
+
+    /* Стили для футера - более светлый */
+    footer {
+      border-top-color: #333333 !important;
+    }
+    
+    footer * {
+      color: #9ca3af !important;
+    }
+
+    /* Стили для текста в корзине */
+    #cartItems * {
+      color: #ffffff !important;
+    }
+
+    #cartItems .text-gray-400 {
+      color: #b0b8c4 !important;
+    }
+
+    /* Стили для placeholder в textarea */
+    textarea::placeholder {
+      color: #9ca3af !important;
+    }
+
+    /* Стили для блока самовывоза - более светлый */
+    .bg-purple-500\/10 {
+      background: rgba(139, 92, 246, 0.08) !important;
+    }
+    
+    .border-purple-500\/20 {
+      border-color: rgba(139, 92, 246, 0.2) !important;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER - более светлый -->
+<header class="flex items-center justify-between px-4 md:px-12 py-3 border-b border-gray-800 bg-black/60 backdrop-blur-sm sticky top-0 z-50">
+  <a href="/" class="text-xl md:text-2xl font-bold tracking-widest text-white">LASTA.PC</a>
+
+  <nav class="hidden md:flex gap-8 text-sm text-gray-300">
+    <a href="/catalog" class="hover:text-white transition">Готовые решения</a>
+    <a href="/configuration" class="hover:text-white transition">Конструктор</a>
+    <a href="/faq" class="hover:text-white transition">Вопросы</a>
+  </nav>
+
+  <div class="flex gap-2 md:gap-4 items-center">
+    <a href="/profile" class="cursor-pointer hover:text-purple-500 transition">
+      <img src="/src/img/svg/user.svg" alt="Профиль" class="w-9 h-9 md:w-11 md:h-11">
+    </a>
+    <a href="/cart" class="cursor-pointer hover:text-purple-500 transition">
+      <img src="/src/img/svg/shopping-cart.svg" alt="Корзина" class="w-9 h-9 md:w-11 md:h-11">
+    </a>
+  </div>
+</header>
+
+<!-- ОСНОВНОЙ КОНТЕНТ -->
+<main class="container mx-auto px-4 py-8 max-w-6xl">
+  <h1 class="text-3xl md:text-4xl font-bold mb-8 text-white">Оформление заказа</h1>
+
+  <div class="grid md:grid-cols-3 gap-6">
+    <!-- Левая колонка - форма -->
+    <div class="md:col-span-2 space-y-6">
+      
+      <!-- Информация о пользователе -->
+      <div class="checkout-card">
+        <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+          <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+          </svg>
+          Данные получателя
+        </h2>
+        <div class="space-y-3">
+          <div class="flex items-center gap-3 p-3 bg-gray-800 rounded-lg">
+            <span class="text-gray-400">Имя:</span>
+            <span id="profileName" class="text-white font-bold">Загрузка...</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 bg-gray-800 rounded-lg">
+            <span class="text-gray-400">Email:</span>
+            <span id="profileEmail" class="text-white">Загрузка...</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 bg-gray-800 rounded-lg">
+            <span class="text-gray-400">Телефон:</span>
+            <span id="profilePhone" class="text-white">Не указан</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Адрес самовывоза - более светлый -->
+      <div class="mb-4 p-4 bg-purple-500/10 border border-purple-500/20 rounded-xl">
+        <div class="flex items-start gap-3">
+          <svg class="w-6 h-6 text-purple-500 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+          </svg>
+          <div>
+            <p class="font-bold text-purple-400">Пункт самовывоза</p>
+            <p class="text-gray-300 text-sm">г. Санкт-Петербург, ул. Коллонтай, 21к1, 8 подъезд, 1 этаж</p>
+            <p class="text-gray-400 text-xs mt-1">🕐 Ежедневно с 10:00 до 21:00</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Способ оплаты -->
+      <div class="checkout-card">
+        <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+          <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+          Способ оплаты
+        </h2>
+        
+        <div class="space-y-3">
+          <!-- Наличные -->
+          <label class="payment-option active" id="paymentCash">
+            <input type="radio" name="payment" value="cash" checked>
+            <span class="radio-circle"></span>
+            <div class="flex-1">
+              <p class="font-bold text-white">Наличными</p>
+              <p class="text-sm text-gray-400">Оплата при получении в магазине</p>
+            </div>
+            <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </label>
+
+          <!-- Банковская карта (онлайн) -->
+          <label class="payment-option" id="paymentCard">
+            <input type="radio" name="payment" value="card">
+            <span class="radio-circle"></span>
+            <div class="flex-1">
+              <p class="font-bold text-white">Банковской картой (онлайн)</p>
+              <p class="text-sm text-gray-400">Оплата через Robokassa</p>
+            </div>
+            <div class="flex gap-1">
+              <svg class="w-8 h-8" viewBox="0 0 38 24" fill="none">
+                <rect x="0.5" y="0.5" width="37" height="23" rx="3.5" fill="white" stroke="#E5E7EB"/>
+                <path d="M12.5 8.5L9.5 15.5H7.5L5.5 9.5L7.5 8.5H9.5L10.5 12.5L13.5 8.5H12.5Z" fill="#1A1F71"/>
+                <path d="M26.5 8.5L23.5 15.5H21.5L19.5 9.5L21.5 8.5H23.5L24.5 12.5L27.5 8.5H26.5Z" fill="#1A1F71"/>
+                <circle cx="19" cy="12" r="4" fill="#1A1F71"/>
+                <circle cx="19" cy="12" r="4" fill="#1A1F71" opacity="0.65"/>
+              </svg>
+              <svg class="w-8 h-8" viewBox="0 0 38 24" fill="none">
+                <rect x="0.5" y="0.5" width="37" height="23" rx="3.5" fill="white" stroke="#E5E7EB"/>
+                <circle cx="13" cy="12" r="5" fill="#EB001B"/>
+                <circle cx="23" cy="12" r="5" fill="#F79E1B"/>
+                <path d="M18 8.5C16.5 9.5 15.5 10.5 15.5 12C15.5 13.5 16.5 14.5 18 15.5C19.5 14.5 20.5 13.5 20.5 12C20.5 10.5 19.5 9.5 18 8.5Z" fill="#FF5F00"/>
+              </svg>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Карта -->
+      <div class="checkout-card">
+        <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+          <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+          </svg>
+          Как нас найти
+        </h2>
+        <div style="position:relative;overflow:hidden;" class="rounded-xl w-full h-64 md:h-80">
+          <a href="https://yandex.ru/maps/2/saint-petersburg/?utm_medium=mapframe&utm_source=maps" style="color:#eee !important;font-size:12px;position:absolute;top:0px;z-index:10;">Санкт‑Петербург</a>
+          <a href="https://yandex.ru/maps/2/saint-petersburg/house/ulitsa_kollontay_21k1/Z0kYcgFpSEEPQFtjfXVweXtlYQ==/?ll=30.469760%2C59.918961&utm_medium=mapframe&utm_source=maps&z=19.11" style="color:#eee !important;font-size:12px;position:absolute;top:14px;z-index:10;">Улица Коллонтай, 21к1 — Яндекс Карты</a>
+          <iframe src="https://yandex.ru/map-widget/v1/?ll=30.469760%2C59.918961&mode=whatshere&whatshere%5Bpoint%5D=30.468692%2C59.918596&whatshere%5Bzoom%5D=17&z=17.5" 
+                  width="100%" 
+                  height="100%" 
+                  frameborder="0" 
+                  allowfullscreen="true" 
+                  style="position:relative; min-height: 256px;">
+          </iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- Правая колонка - итого -->
+    <div class="md:col-span-1">
+      <div class="checkout-card sticky top-24">
+        <h2 class="text-xl font-bold mb-4 text-white">Ваш заказ</h2>
+        
+        <!-- Список товаров -->
+        <div id="cartItems" class="space-y-3 max-h-80 overflow-y-auto mb-4">
+          <div class="text-center text-gray-400 py-8">
+            <div class="spinner mx-auto mb-2"></div>
+            <span class="text-white">Загрузка корзины...</span>
+          </div>
+        </div>
+
+        <hr class="border-gray-700 my-4">
+
+        <!-- Итого -->
+        <div class="space-y-2">
+          <div class="flex justify-between text-gray-400">
+            <span class="text-white">Товаров:</span>
+            <span id="itemsCount" class="text-white">0</span>
+          </div>
+          <div class="flex justify-between text-2xl font-bold pt-2 border-t border-gray-700">
+            <span class="text-white">Итого:</span>
+            <span id="totalAmount" class="text-purple-400">0 ₽</span>
+          </div>
+        </div>
+
+        <!-- Кнопка оформления -->
+        <button 
+          id="checkoutBtn"
+          class="w-full mt-6 py-4 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Оформить заказ
+        </button>
+
+        <p class="text-xs text-gray-500 text-center mt-4">
+          <span class="text-white">Нажимая «Оформить заказ», вы соглашаетесь с</span>
+          <a href="/terms" class="text-purple-400 hover:underline">условиями</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="border-t border-black/40 text-gray-400 text-sm">
+
+  <div class="max-w-[1400px] mx-auto px-4 md:px-6 py-8 md:py-10 flex flex-col md:flex-row justify-between gap-6 md:gap-8">
+
+    <!-- LEFT -->
+    <div class="space-y-2 text-center md:text-left">
+      <div class="text-white tracking-widest text-[13px] mb-3">
+        LASTA.PC
+      </div>
+
+      <p>+7 (923) 428-44-54</p>
+      <p>lasta@gmail.com</p>
+      <p>г. Санкт-Петербург, ул. Коллонтай 21к1</p>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="flex flex-col items-center md:items-end gap-4">
+
+      <!-- SOCIALS -->
+      <div class="flex gap-4 text-lg">
+        <a href="https://vk.ru/oskretkov1" class="hover:opacity-80 transition" aria-label="VK">
+          <img src="/src/img/svg/vk.svg" alt="VK" class="w-6 h-6">
+        </a>
+        <a href="https://t.me/kain3131" class="hover:opacity-80 transition" aria-label="Telegram">
+          <img src="/src/img/svg/tg.svg" alt="Telegram" class="w-6 h-6">
+        </a>
+      </div>
+
+      <!-- LINKS -->
+      <div class="flex flex-col md:items-end gap-2 text-xs text-center md:text-right">
+        <a href="#" class="hover:text-white transition">
+          Реквизиты
+        </a>
+        <a href="#" class="hover:text-white transition">
+          Политика конфиденциальности
+        </a>
+        <a href="#" class="hover:text-white transition">
+          Пользовательское соглашение
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+</footer>
+
+<!-- Подключение JavaScript -->
+<script src="/scripts/supabase.js"></script>
+<script src="/script/checkout.js"></script>
+</body>
+</html>

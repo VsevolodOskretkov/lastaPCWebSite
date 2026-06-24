@@ -157,17 +157,19 @@ function renderCart(data) {
     }
   })
 
+  // Блок с итогом и кнопкой оформления
   const totalDiv = document.createElement('div')
   totalDiv.className = 'mt-8 sm:mt-12 text-center sm:text-right'
   totalDiv.innerHTML = `
-    <h2 class="text-2xl sm:text-3xl md:text-4xl mb-4 sm:mb-6 cart-total">Итого: ${total.toLocaleString("ru-RU")} ₽</h2>
+    <h2 class="text-2xl sm:text-3xl md:text-4xl mb-4 sm:mb-6 cart-total text-white">Итого: ${total.toLocaleString("ru-RU")} ₽</h2>
     <button onclick="checkout()" 
-            class="bg-purple-600 px-6 sm:px-10 py-3 sm:py-4 rounded-2xl text-base sm:text-xl hover:bg-purple-700 transition w-full sm:w-auto">
+            class="checkout-btn w-full sm:w-auto">
       Оформить заказ
     </button>
   `
   container.appendChild(totalDiv)
 }
+  
 
 // ========== РЕНДЕР ЛОКАЛЬНОЙ КОРЗИНЫ - АДАПТИРОВАННЫЙ ==========
 function renderLocalCart(localCart) {
@@ -399,8 +401,44 @@ window.removeLocalItem = function(id) {
   localStorage.setItem('pcCart', JSON.stringify(updatedCart));
   renderLocalCart(updatedCart);
 }
+// ========== ОФОРМЛЕНИЕ ЗАКАЗА - ПЕРЕХОД НА СТРАНИЦУ ОПЛАТЫ ==========
+window.checkout = async function() {
+  try {
+    const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+    
+    if (sessionError || !session) {
+      alert('Войдите в аккаунт для оформления заказа');
+      window.location.href = '/reg';
+      return;
+    }
+    
+    // Проверяем, есть ли товары в корзине
+    const { data: cartItems, error: cartError } = await supabaseClient
+      .from('cart_items')
+      .select('id, quantity')
+      .eq('user_id', session.user.id);
+    
+    if (cartError) throw cartError;
+    
+    if (!cartItems || cartItems.length === 0) {
+      alert('Корзина пуста');
+      return;
+    }
+    
+    // Сохраняем данные в localStorage для передачи на страницу оплаты
+    localStorage.setItem('checkout_user_id', session.user.id);
+    localStorage.setItem('checkout_timestamp', Date.now().toString());
+    
+    // Перенаправляем на страницу оформления заказа
+    window.location.href = '/views/pages/opl.html';
+    
+  } catch (err) {
+    console.error('Ошибка оформления заказа:', err);
+    alert('Ошибка: ' + err.message);
+  }
+};
 
-// ========== ОФОРМЛЕНИЕ ЗАКАЗА ЧЕРЕЗ ROBOKASSA ==========
+/* ========== ОФОРМЛЕНИЕ ЗАКАЗА ЧЕРЕЗ ROBOKASSA ==========
 window.checkout = async function() {
   try {
     const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
@@ -522,7 +560,7 @@ window.checkout = async function() {
     }
   }
 };
-
+*/
 // ========== ВСПОМОГАТЕЛЬНЫЕ - АДАПТИРОВАННЫЕ ==========
 function showEmptyCart(container) {
   container.innerHTML = `
