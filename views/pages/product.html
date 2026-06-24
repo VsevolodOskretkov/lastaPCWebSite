@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-
   <meta charset="UTF-8">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Товар | LASTA.PC</title>
-
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
-
-<style>
+  <style>
     @font-face {
       font-family: 'Tektur Regular';
       src: url('/src/Fonts/Tektur-Regular.ttf') format('truetype');
@@ -27,25 +24,53 @@
       font-display: swap;
     }
     
-    /* Применение шрифтов */
     body {
       font-family: 'Tektur Regular', monospace, sans-serif;
+      overflow-x: hidden;
     }
     
     h1, h2, h3, h4, .font-bold, button, nav a, .tracking-widest {
       font-family: 'Tektur Bold', monospace, sans-serif;
     }
     
-    /* Для заголовков в карточках */
     .text-xl, .text-5xl, .text-2xl, .text-lg {
       font-family: 'Tektur Bold', monospace, sans-serif;
     }
+
+    /* Улучшение кликабельности на мобильных */
+    button, a {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Адаптивные настройки */
+    @media (max-width: 640px) {
+      .product-title {
+        font-size: 2rem;
+      }
+      .product-price {
+        font-size: 2rem;
+      }
+      .product-section-title {
+        font-size: 1.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .product-padding {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+      }
+    }
   </style>
 </head>
-<body class="bg-gray-950 text-white font-sans ">
+
+<body class="bg-gray-950 text-white font-sans overflow-x-hidden">
 
 <!-- HEADER -->
-<header class="flex items-center justify-between px-4 md:px-12 py-3 border-b border-gray-800">
+<header class="flex items-center justify-between px-4 md:px-12 py-2 md:py-3 border-b border-gray-800">
   <a href="/" class="text-xl md:text-2xl font-bold tracking-widest">LASTA.PC</a>
 
   <nav class="hidden md:flex gap-8 text-sm text-gray-300">
@@ -62,8 +87,8 @@
   </button>
 
   <!-- Мобильное меню (выпадающее) -->
-  <div id="mobileMenu" class="hidden md:hidden absolute top-16 left-0 right-0 bg-gray-900 border-b border-gray-800 z-50">
-    <div class="flex flex-col p-4 gap-4">
+  <div id="mobileMenu" class="hidden md:hidden absolute top-14 md:top-16 left-0 right-0 bg-gray-900 border-b border-gray-800 z-50">
+    <div class="flex flex-col p-4 gap-3">
       <a href="/catalog" class="text-gray-300 hover:text-white transition py-2 px-4 hover:bg-gray-800 rounded-lg">Готовые решения</a>
       <a href="/configuration" class="text-gray-300 hover:text-white transition py-2 px-4 hover:bg-gray-800 rounded-lg">Конструктор</a>
       <a href="/faq" class="text-gray-300 hover:text-white transition py-2 px-4 hover:bg-gray-800 rounded-lg">Вопросы</a>
@@ -79,13 +104,26 @@
     </a>
   </div>
 </header>
-<div id="productContainer">
 
-</div>
+<div id="productContainer"></div>
+
 <script src="/scripts/supabase.js"></script>
 <script src="/scripts/product.js"></script>
 <script src="/scripts/cart.js"></script>
 
+<script>
+// Мобильное меню
+document.getElementById('mobileMenuBtn')?.addEventListener('click', function() {
+  const menu = document.getElementById('mobileMenu');
+  menu.classList.toggle('hidden');
+});
+
+document.querySelectorAll('#mobileMenu a').forEach(link => {
+  link.addEventListener('click', function() {
+    document.getElementById('mobileMenu').classList.add('hidden');
+  });
+});
+</script>
 
 </body>
 </html>
