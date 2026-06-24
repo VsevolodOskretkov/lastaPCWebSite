@@ -366,10 +366,12 @@ async function loadOrders() {
   isLoadingOrders = true
 
   try {
+    // Сначала загружаем заказы
     const { data: orders, error } = await supabaseClient
       .from('orders')
       .select(`
         id,
+        user_id,
         total_price,
         status,
         payment_method,
@@ -377,11 +379,6 @@ async function loadOrders() {
         delivery_address,
         phone,
         created_at,
-
-        profiles (
-          name,
-          email
-        ),
 
         order_items (
           id,
@@ -404,7 +401,32 @@ async function loadOrders() {
 
     if (error) throw error
 
-    renderOrdersList(orders || [])
+    // Получаем все user_id из заказов
+    const userIds = orders.map(order => order.user_id).filter(id => id)
+    
+    // Загружаем профили пользователей отдельно
+    let profilesMap = {}
+    if (userIds.length > 0) {
+      const { data: profiles, error: profilesError } = await supabaseClient
+        .from('profiles')
+        .select('id, name, email')
+        .in('id', userIds)
+
+      if (!profilesError && profiles) {
+        profilesMap = profiles.reduce((acc, profile) => {
+          acc[profile.id] = profile
+          return acc
+        }, {})
+      }
+    }
+
+    // Объединяем заказы с профилями
+    const ordersWithProfiles = orders.map(order => ({
+      ...order,
+      profiles: profilesMap[order.user_id] || null
+    }))
+
+    renderOrdersList(ordersWithProfiles || [])
 
   } catch (err) {
     console.error('Ошибка загрузки заказов:', err)
