@@ -190,11 +190,7 @@ function renderLocalCart(localCart) {
     div.innerHTML = `
       <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
 <div class="w-full lg:w-48 h-40 sm:h-48 lg:h-52 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center relative overflow-hidden">
-  <img 
-      src="/src/img/Pc/defoultPC.webp" 
-      alt="Кастомная сборка"
-      class="w-full h-full object-contain"
-      loading="lazy"
+<img src="/src/img/Pc/defoultPC.webp" class="w-full h-full object-cover">
 </div>
         
         <div class="flex-1">
@@ -271,19 +267,19 @@ function createComputerCard(item, pc, itemTotal) {
             </div>
           </div>
 
-          <div class="flex flex-row lg:flex-col items-center lg:items-end gap-3 sm:gap-4 w-full lg:w-auto">
-            <div class="flex items-center bg-[#23252b] rounded-2xl overflow-hidden">
-              <button onclick="changeQuantity('${item.id}', -1)" 
-                      class="px-4 sm:px-5 py-2 sm:py-3 hover:bg-[#2e3138] transition text-lg sm:text-xl">−</button>
-              <div class="px-4 sm:px-6 text-base sm:text-lg">${item.quantity}</div>
-              <button onclick="changeQuantity('${item.id}', 1)" 
-                      class="px-4 sm:px-5 py-2 sm:py-3 hover:bg-[#2e3138] transition text-lg sm:text-xl">+</button>
-            </div>
-            <button onclick="removeFromCart('${item.id}')" 
-                    class="bg-red-600 px-4 sm:px-6 py-2 sm:py-3 rounded-2xl hover:bg-red-700 transition text-sm sm:text-base w-full lg:w-auto">
-               Удалить
-            </button>
-          </div>
+         <div class="flex flex-row lg:flex-col items-center lg:items-end gap-2 sm:gap-3 w-full lg:w-auto">
+  <div class="flex items-center bg-[#23252b] rounded-2xl overflow-hidden flex-shrink-0">
+    <button onclick="changeQuantity('${item.id}', -1)" 
+            class="px-3 sm:px-4 py-1.5 sm:py-2 hover:bg-[#2e3138] transition text-base sm:text-lg">−</button>
+    <div class="px-3 sm:px-5 text-sm sm:text-base min-w-[30px] text-center">${item.quantity}</div>
+    <button onclick="changeQuantity('${item.id}', 1)" 
+            class="px-3 sm:px-4 py-1.5 sm:py-2 hover:bg-[#2e3138] transition text-base sm:text-lg">+</button>
+  </div>
+  <button onclick="removeFromCart('${item.id}')" 
+          class="bg-red-600 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl hover:bg-red-700 transition text-xs sm:text-sm flex-shrink-0">
+     Удалить
+  </button>
+</div>
         </div>
       </div>
     </div>
@@ -309,9 +305,7 @@ function createCustomBuildCard(item, build, components, itemTotal) {
   div.innerHTML = `
     <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
       <div class="w-full lg:w-48 h-40 sm:h-48 lg:h-52 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center relative overflow-hidden">
-        <img 
-            src="/src/img/Pс/defoultPC.webp" 
-            class="w-full h-full object-cover">
+          <img src="/src/img/Pc/defoultPC.webp" class="w-full h-full object-cover">
       </div>
       
       <div class="flex-1">
@@ -328,19 +322,19 @@ function createCustomBuildCard(item, build, components, itemTotal) {
             </div>
           </div>
 
-          <div class="flex flex-row lg:flex-col items-center lg:items-end gap-3 sm:gap-4 w-full lg:w-auto">
-            <div class="flex items-center bg-[#23252b] rounded-2xl overflow-hidden">
-              <button onclick="changeQuantity('${item.id}', -1)" 
-                      class="px-4 sm:px-5 py-2 sm:py-3 hover:bg-[#2e3138] transition text-lg sm:text-xl">−</button>
-              <div class="px-4 sm:px-6 text-base sm:text-lg">${item.quantity}</div>
-              <button onclick="changeQuantity('${item.id}', 1)" 
-                      class="px-4 sm:px-5 py-2 sm:py-3 hover:bg-[#2e3138] transition text-lg sm:text-xl">+</button>
-            </div>
-            <button onclick="removeFromCart('${item.id}')" 
-                    class="bg-red-600 px-4 sm:px-6 py-2 sm:py-3 rounded-2xl hover:bg-red-700 transition text-sm sm:text-base w-full lg:w-auto">
-               Удалить
-            </button>
-          </div>
+<div class="flex flex-row lg:flex-col items-center lg:items-end gap-2 sm:gap-3 w-full lg:w-auto">
+  <div class="flex items-center bg-[#23252b] rounded-2xl overflow-hidden flex-shrink-0">
+    <button onclick="changeQuantity('${item.id}', -1)" 
+            class="px-3 sm:px-4 py-1.5 sm:py-2 hover:bg-[#2e3138] transition text-base sm:text-lg">−</button>
+    <div class="px-3 sm:px-5 text-sm sm:text-base min-w-[30px] text-center">${item.quantity}</div>
+    <button onclick="changeQuantity('${item.id}', 1)" 
+            class="px-3 sm:px-4 py-1.5 sm:py-2 hover:bg-[#2e3138] transition text-base sm:text-lg">+</button>
+  </div>
+  <button onclick="removeFromCart('${item.id}')" 
+          class="bg-red-600 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl hover:bg-red-700 transition text-xs sm:text-sm flex-shrink-0">
+     Удалить
+  </button>
+</div>
         </div>
       </div>
     </div>
