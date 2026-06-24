@@ -3,6 +3,7 @@
 // Кэш для корзины
 let cachedCart = null
 let cacheTime = 0
+const CACHE_DURATION = 5 * 60 * 1000 // 5 минут
 
 
 // ========== ДОБАВЛЕНИЕ ГОТОВОГО ПК В КОРЗИНУ (для catalog.html) ==========
@@ -75,7 +76,6 @@ async function loadCart() {
       return
     }
 
-    // ИСПРАВЛЕННЫЙ ЗАПРОС (убрана лишняя запятая в конце select)
     const { data, error } = await supabaseClient
       .from("cart_items")
       .select(`
@@ -128,7 +128,7 @@ async function loadCart() {
   }
 }
 
-// ========== РЕНДЕР КОРЗИНЫ (БД) ==========
+// ========== РЕНДЕР КОРЗИНЫ (БД) - АДАПТИРОВАННЫЙ ==========
 function renderCart(data) {
   const container = document.getElementById("cartContainer")
   if (!container) return
@@ -158,18 +158,18 @@ function renderCart(data) {
   })
 
   const totalDiv = document.createElement('div')
-  totalDiv.className = 'mt-12 text-right'
+  totalDiv.className = 'mt-8 sm:mt-12 text-center sm:text-right'
   totalDiv.innerHTML = `
-    <h2 class="text-4xl mb-6">Итого: ${total.toLocaleString("ru-RU")} ₽</h2>
+    <h2 class="text-2xl sm:text-3xl md:text-4xl mb-4 sm:mb-6 cart-total">Итого: ${total.toLocaleString("ru-RU")} ₽</h2>
     <button onclick="checkout()" 
-            class="bg-purple-600 px-10 py-4 rounded-2xl text-xl hover:bg-purple-700 transition">
+            class="bg-purple-600 px-6 sm:px-10 py-3 sm:py-4 rounded-2xl text-base sm:text-xl hover:bg-purple-700 transition w-full sm:w-auto">
       Оформить заказ
     </button>
   `
   container.appendChild(totalDiv)
 }
 
-// ========== РЕНДЕР ЛОКАЛЬНОЙ КОРЗИНЫ ==========
+// ========== РЕНДЕР ЛОКАЛЬНОЙ КОРЗИНЫ - АДАПТИРОВАННЫЙ ==========
 function renderLocalCart(localCart) {
   const container = document.getElementById("cartContainer")
   if (!container) return
@@ -185,101 +185,96 @@ function renderLocalCart(localCart) {
   localCart.forEach(item => {
     total += item.totalPrice || 0
     
-const div = document.createElement('div')
-div.className = 'bg-[#1a1b1f] rounded-3xl p-6 w-full mb-6'
-div.innerHTML = `
-<div class="flex flex-col lg:flex-row gap-8">
-    <div class="w-full lg:w-48 h-52 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center relative overflow-hidden">
-        <img 
-            src="/src/img/mainView/defoultPC.webp" 
-            alt="Кастомная сборка" 
-            class="w-full h-full object-cover"
-        >
-        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-            <p class="text-white font-medium text-center">Кастомная сборка</p>
+    const div = document.createElement('div')
+    div.className = 'bg-[#1a1b1f] rounded-2xl sm:rounded-3xl p-4 sm:p-6 w-full mb-4 sm:mb-6'
+    div.innerHTML = `
+      <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
+        <div class="w-full lg:w-48 h-40 sm:h-48 lg:h-52 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center relative overflow-hidden">
+          <img 
+              src="/src/img/mainView/defoultPC.webp" 
+              class="w-full h-full object-cover">
         </div>
-    </div>
         
-    <div class="flex-1">
-        <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+        <div class="flex-1">
+          <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 sm:gap-6">
             <div>
-                <div class="flex items-center gap-3 mb-3">
-                    <h2 class="text-3xl">${escapeHtml(item.name)}</h2>
-                    <span class="bg-purple-600 text-xs px-3 py-1 rounded-full">Кастом</span>
-                    ${!item.isInDB ? '<span class="bg-yellow-600 text-xs px-3 py-1 rounded-full">Локально</span>' : ''}
-                </div>
-                <p class="text-gray-400 text-lg mb-6">${(item.totalPrice || 0).toLocaleString("ru-RU")} ₽</p>
-                <p class="text-gray-500 text-sm">Войдите в аккаунт, чтобы сохранить сборку в облаке</p>
+              <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                <h2 class="text-xl sm:text-2xl md:text-3xl cart-item-title">${escapeHtml(item.name)}</h2>
+                <span class="bg-purple-600 text-[10px] sm:text-xs px-2 sm:px-3 py-1 rounded-full">Кастом</span>
+                ${!item.isInDB ? '<span class="bg-yellow-600 text-[10px] sm:text-xs px-2 sm:px-3 py-1 rounded-full">Локально</span>' : ''}
+              </div>
+              <p class="text-gray-400 text-base sm:text-lg mb-4 sm:mb-6">${(item.totalPrice || 0).toLocaleString("ru-RU")} ₽</p>
+              <p class="text-gray-500 text-xs sm:text-sm">Войдите в аккаунт, чтобы сохранить сборку в облаке</p>
             </div>
 
-            <div class="flex flex-col items-end gap-4">
-                <button onclick="removeLocalItem(${item.id})" 
-                        class="bg-red-600 px-6 py-3 rounded-2xl hover:bg-red-700 transition">
-                    Удалить
-                </button>
+            <div class="flex flex-row lg:flex-col items-center lg:items-end gap-3 sm:gap-4 w-full lg:w-auto">
+              <button onclick="removeLocalItem(${item.id})" 
+                      class="bg-red-600 px-4 sm:px-6 py-2 sm:py-3 rounded-2xl hover:bg-red-700 transition text-sm sm:text-base w-full lg:w-auto">
+                  Удалить
+              </button>
             </div>
+          </div>
         </div>
-    </div>
-</div>
-`
-container.appendChild(div)
+      </div>
+    `
+    container.appendChild(div)
   })
 
   const totalDiv = document.createElement('div')
-  totalDiv.className = 'mt-12 text-right'
+  totalDiv.className = 'mt-8 sm:mt-12 text-center sm:text-right'
   totalDiv.innerHTML = `
-    <h2 class="text-4xl mb-6">Итого: ${total.toLocaleString("ru-RU")} ₽</h2>
-    <p class="text-gray-500 mb-4">Войдите в аккаунт для оформления заказа</p>
-    <a href="/reg" class="bg-purple-600 px-10 py-4 rounded-2xl text-xl hover:bg-purple-700 transition inline-block">
+    <h2 class="text-2xl sm:text-3xl md:text-4xl mb-4 sm:mb-6 cart-total">Итого: ${total.toLocaleString("ru-RU")} ₽</h2>
+    <p class="text-gray-500 text-sm sm:text-base mb-4">Войдите в аккаунт для оформления заказа</p>
+    <a href="/reg" class="bg-purple-600 px-6 sm:px-10 py-3 sm:py-4 rounded-2xl text-base sm:text-xl hover:bg-purple-700 transition inline-block w-full sm:w-auto text-center">
       Войти и оформить
     </a>
   `
   container.appendChild(totalDiv)
 }
 
-// ========== КАРТОЧКИ ==========
+// ========== КАРТОЧКИ - АДАПТИРОВАННЫЕ ==========
 function createComputerCard(item, pc, itemTotal) {
   const div = document.createElement('div')
-  div.className = 'bg-[#1a1b1f] border border-gray-800 rounded-3xl p-6 w-full mb-6'
+  div.className = 'bg-[#1a1b1f] border border-gray-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 w-full mb-4 sm:mb-6'
   div.innerHTML = `
-    <div class="flex flex-col lg:flex-row gap-8">
+    <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
       <img src="${pc.image || '/src/img/placeholder.webp'}" 
            loading="lazy"
-           class="w-full lg:w-48 h-52 object-cover rounded-2xl"
+           class="w-full lg:w-48 h-40 sm:h-48 lg:h-52 object-cover rounded-xl sm:rounded-2xl"
            onerror="this.src='/src/img/placeholder.webp'">
       
       <div class="flex-1">
-        <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-          <div>
-            <h2 class="text-3xl mb-3">${escapeHtml(pc.title)}</h2>
-            <p class="text-gray-400 text-lg mb-6">${itemTotal.toLocaleString("ru-RU")} ₽</p>
+        <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 sm:gap-6">
+          <div class="w-full">
+            <h2 class="text-xl sm:text-2xl md:text-3xl mb-2 sm:mb-3 cart-item-title">${escapeHtml(pc.title)}</h2>
+            <p class="text-gray-400 text-base sm:text-lg mb-4 sm:mb-6">${itemTotal.toLocaleString("ru-RU")} ₽</p>
             
-            <div class="grid sm:grid-cols-3 gap-4">
-              <div class="bg-[#23252b] p-4 rounded-xl">
-                <p class="text-gray-500 text-sm mb-1">CPU</p>
-                <p class="text-sm">${escapeHtml(pc.cpu || '—')}</p>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
+              <div class="bg-[#23252b] p-3 sm:p-4 rounded-xl">
+                <p class="text-gray-500 text-[10px] sm:text-sm mb-0.5 sm:mb-1">CPU</p>
+                <p class="text-[11px] sm:text-sm">${escapeHtml(pc.cpu || '—')}</p>
               </div>
-              <div class="bg-[#23252b] p-4 rounded-xl">
-                <p class="text-gray-500 text-sm mb-1">GPU</p>
-                <p class="text-sm">${escapeHtml(pc.gpu || '—')}</p>
+              <div class="bg-[#23252b] p-3 sm:p-4 rounded-xl">
+                <p class="text-gray-500 text-[10px] sm:text-sm mb-0.5 sm:mb-1">GPU</p>
+                <p class="text-[11px] sm:text-sm">${escapeHtml(pc.gpu || '—')}</p>
               </div>
-              <div class="bg-[#23252b] p-4 rounded-xl">
-                <p class="text-gray-500 text-sm mb-1">RAM</p>
-                <p class="text-sm">${escapeHtml(pc.ram || '—')}</p>
+              <div class="bg-[#23252b] p-3 sm:p-4 rounded-xl">
+                <p class="text-gray-500 text-[10px] sm:text-sm mb-0.5 sm:mb-1">RAM</p>
+                <p class="text-[11px] sm:text-sm">${escapeHtml(pc.ram || '—')}</p>
               </div>
             </div>
           </div>
 
-          <div class="flex flex-col items-end gap-4">
+          <div class="flex flex-row lg:flex-col items-center lg:items-end gap-3 sm:gap-4 w-full lg:w-auto">
             <div class="flex items-center bg-[#23252b] rounded-2xl overflow-hidden">
               <button onclick="changeQuantity('${item.id}', -1)" 
-                      class="px-5 py-3 hover:bg-[#2e3138] transition text-xl">−</button>
-              <div class="px-6 text-lg">${item.quantity}</div>
+                      class="px-4 sm:px-5 py-2 sm:py-3 hover:bg-[#2e3138] transition text-lg sm:text-xl">−</button>
+              <div class="px-4 sm:px-6 text-base sm:text-lg">${item.quantity}</div>
               <button onclick="changeQuantity('${item.id}', 1)" 
-                      class="px-5 py-3 hover:bg-[#2e3138] transition text-xl">+</button>
+                      class="px-4 sm:px-5 py-2 sm:py-3 hover:bg-[#2e3138] transition text-lg sm:text-xl">+</button>
             </div>
             <button onclick="removeFromCart('${item.id}')" 
-                    class="bg-red-600 px-6 py-3 rounded-2xl hover:bg-red-700 transition">
+                    class="bg-red-600 px-4 sm:px-6 py-2 sm:py-3 rounded-2xl hover:bg-red-700 transition text-sm sm:text-base w-full lg:w-auto">
                Удалить
             </button>
           </div>
@@ -292,56 +287,51 @@ function createComputerCard(item, pc, itemTotal) {
 
 function createCustomBuildCard(item, build, components, itemTotal) {
   const div = document.createElement('div')
-  div.className = 'bg-[#1a1b1f] border border-purple-800 rounded-3xl p-6 w-full mb-6'
+  div.className = 'bg-[#1a1b1f] border border-purple-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 w-full mb-4 sm:mb-6'
   
   const specsHtml = components.map(bi => {
     const comp = bi.components
     if (!comp) return ''
     return `
-      <div class="bg-[#23252b] p-4 rounded-xl">
-        <p class="text-gray-500 text-sm mb-1">${escapeHtml(comp.type)}</p>
-        <p class="text-sm">${escapeHtml(comp.title)}</p>
+      <div class="bg-[#23252b] p-3 sm:p-4 rounded-xl">
+        <p class="text-gray-500 text-[10px] sm:text-sm mb-0.5 sm:mb-1">${escapeHtml(comp.type)}</p>
+        <p class="text-[11px] sm:text-sm">${escapeHtml(comp.title)}</p>
       </div>
     `
   }).join('')
 
   div.innerHTML = `
-<div class="flex flex-col lg:flex-row gap-8">
-    <div class="w-full lg:w-48 h-52 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center relative overflow-hidden">
+    <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
+      <div class="w-full lg:w-48 h-40 sm:h-48 lg:h-52 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center relative overflow-hidden">
         <img 
             src="/src/img/mainView/defoultPC.webp" 
-            alt="Кастомная сборка" 
-            class="w-full h-full object-cover"
-        >
-        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-            <p class="text-white font-medium text-center">Кастомная сборка</p>
-        </div>
-    </div>
+            class="w-full h-full object-cover">
+      </div>
       
       <div class="flex-1">
-        <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-          <div>
-            <div class="flex items-center gap-3 mb-3">
-              <h2 class="text-3xl">${escapeHtml(build.title)}</h2>
-              <span class="bg-purple-600 text-xs px-3 py-1 rounded-full">Кастом</span>
+        <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 sm:gap-6">
+          <div class="w-full">
+            <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+              <h2 class="text-xl sm:text-2xl md:text-3xl cart-item-title">${escapeHtml(build.title)}</h2>
+              <span class="bg-purple-600 text-[10px] sm:text-xs px-2 sm:px-3 py-1 rounded-full">Кастом</span>
             </div>
-            <p class="text-gray-400 text-lg mb-6">${itemTotal.toLocaleString("ru-RU")} ₽</p>
+            <p class="text-gray-400 text-base sm:text-lg mb-4 sm:mb-6">${itemTotal.toLocaleString("ru-RU")} ₽</p>
             
-            <div class="grid sm:grid-cols-3 gap-4">
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
               ${specsHtml}
             </div>
           </div>
 
-          <div class="flex flex-col items-end gap-4">
+          <div class="flex flex-row lg:flex-col items-center lg:items-end gap-3 sm:gap-4 w-full lg:w-auto">
             <div class="flex items-center bg-[#23252b] rounded-2xl overflow-hidden">
               <button onclick="changeQuantity('${item.id}', -1)" 
-                      class="px-5 py-3 hover:bg-[#2e3138] transition text-xl">−</button>
-              <div class="px-6 text-lg">${item.quantity}</div>
+                      class="px-4 sm:px-5 py-2 sm:py-3 hover:bg-[#2e3138] transition text-lg sm:text-xl">−</button>
+              <div class="px-4 sm:px-6 text-base sm:text-lg">${item.quantity}</div>
               <button onclick="changeQuantity('${item.id}', 1)" 
-                      class="px-5 py-3 hover:bg-[#2e3138] transition text-xl">+</button>
+                      class="px-4 sm:px-5 py-2 sm:py-3 hover:bg-[#2e3138] transition text-lg sm:text-xl">+</button>
             </div>
             <button onclick="removeFromCart('${item.id}')" 
-                    class="bg-red-600 px-6 py-3 rounded-2xl hover:bg-red-700 transition">
+                    class="bg-red-600 px-4 sm:px-6 py-2 sm:py-3 rounded-2xl hover:bg-red-700 transition text-sm sm:text-base w-full lg:w-auto">
                Удалить
             </button>
           </div>
@@ -413,7 +403,6 @@ window.removeLocalItem = function(id) {
 // ========== ОФОРМЛЕНИЕ ЗАКАЗА ЧЕРЕЗ ROBOKASSA ==========
 window.checkout = async function() {
   try {
-    // Проверяем авторизацию
     const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
     
     if (sessionError || !session) {
@@ -422,7 +411,6 @@ window.checkout = async function() {
       return;
     }
     
-    // Собираем данные доставки (можно через модальное окно)
     const deliveryAddress = prompt('Введите адрес доставки:');
     if (!deliveryAddress) {
       alert('Адрес доставки обязателен');
@@ -435,7 +423,6 @@ window.checkout = async function() {
       return;
     }
     
-    // Показываем индикатор загрузки
     const checkoutBtn = document.querySelector('button[onclick="checkout()"]');
     const originalText = checkoutBtn?.innerHTML;
     if (checkoutBtn) {
@@ -443,7 +430,6 @@ window.checkout = async function() {
       checkoutBtn.disabled = true;
     }
     
-    // Получаем текущую корзину из БД
     const { data: cartItems, error: cartError } = await supabaseClient
       .from('cart_items')
       .select(`
@@ -475,7 +461,6 @@ window.checkout = async function() {
       return;
     }
     
-    // Формируем данные для заказа
     let totalAmount = 0;
     const orderItems = [];
     
@@ -504,7 +489,6 @@ window.checkout = async function() {
       });
     }
     
-    // Создаём платёж через API
     const response = await fetch('/api/robokassa', {
       method: 'POST',
       headers: {
@@ -525,14 +509,12 @@ window.checkout = async function() {
       throw new Error(data.error || 'Ошибка создания платежа');
     }
     
-    // Перенаправляем на Robokassa
     window.location.href = data.url;
     
   } catch (err) {
     console.error('Ошибка оформления заказа:', err);
     alert('Ошибка: ' + err.message);
     
-    // Восстанавливаем кнопку
     const checkoutBtn = document.querySelector('button[onclick="checkout()"]');
     if (checkoutBtn) {
       checkoutBtn.innerHTML = 'Оформить заказ';
@@ -541,14 +523,14 @@ window.checkout = async function() {
   }
 };
 
-// ========== ВСПОМОГАТЕЛЬНЫЕ ==========
+// ========== ВСПОМОГАТЕЛЬНЫЕ - АДАПТИРОВАННЫЕ ==========
 function showEmptyCart(container) {
   container.innerHTML = `
-    <div class="text-center py-16">
-      <div class="text-6xl mb-4">🛒</div>
-      <h3 class="text-xl text-gray-400 mb-2">Корзина пуста</h3>
-      <p class="text-gray-500 mb-6">Добавьте товары, чтобы оформить заказ</p>
-      <a href="/catalog" class="bg-purple-600 px-6 py-3 rounded-xl hover:bg-purple-700 transition inline-block">
+    <div class="text-center py-12 sm:py-16">
+      <div class="text-4xl sm:text-6xl mb-4">🛒</div>
+      <h3 class="text-lg sm:text-xl text-gray-400 mb-2">Корзина пуста</h3>
+      <p class="text-gray-500 text-sm sm:text-base mb-6">Добавьте товары, чтобы оформить заказ</p>
+      <a href="/catalog" class="bg-purple-600 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl hover:bg-purple-700 transition inline-block text-sm sm:text-base">
         Перейти в каталог
       </a>
     </div>
@@ -559,7 +541,7 @@ function showError() {
   const container = document.getElementById("cartContainer")
   if (container) {
     container.innerHTML = `
-      <div class="text-center py-16 text-red-400">
+      <div class="text-center py-12 sm:py-16 text-red-400 text-sm sm:text-base">
         Ошибка загрузки корзины<br>
         <button onclick="location.reload()" class="mt-4 text-purple-400 underline">Повторить</button>
       </div>
