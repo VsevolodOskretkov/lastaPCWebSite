@@ -25,27 +25,46 @@ function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-function renderComponent(type) {
+// Группировка компонентов по типу
+function groupAndSortComponents(components) {
+    const grouped = {};
+    components.forEach(comp => {
+        if (!grouped[comp.type]) grouped[comp.type] = [];
+        grouped[comp.type].push(comp);
+    });
+    // Сортируем по цене
+    Object.keys(grouped).forEach(key => {
+        grouped[key].sort((a, b) => a.price - b.price);
+    });
+    return grouped;
+}
+
+function renderComponent(type, items, preserveSelection = false) {
     const container = document.getElementById(`${type}Container`);
     if (!container) {
         console.error(`Контейнер ${type}Container не найден`);
         return;
     }
 
-    const items = components.filter(c => c.type === type);
+    // Если нужно сохранить выбор, отмечаем выбранный компонент
+    const selectedId = build[type]?.id;
+
     container.innerHTML = `
         <button class="w-full bg-[#18191d] border border-gray-800 rounded-2xl p-4 text-left" 
                 onclick="toggleDropdown('${type}')">
-            ${getTitle(type)}
+            ${getTitle(type)} ${build[type] ? '✅' : ''}
         </button>
         <div id="${type}Dropdown" class="component-dropdown hidden">
             ${items.map(item => `
-                <div class="p-4 hover:bg-gray-800 cursor-pointer" 
+                <div class="p-4 hover:bg-gray-800 cursor-pointer ${selectedId === item.id ? 'bg-purple-900/20 border-l-4 border-purple-500' : ''}" 
                      onclick="selectComponent('${type}', ${item.id})">
-                    <div>${item.title}</div>
+                    <div>${item.title} ${selectedId === item.id ? '✓' : ''}</div>
                     <div class="text-purple-400">
                         ${item.price.toLocaleString()} ₽
                     </div>
+                    ${item.socket ? `<div class="text-gray-500 text-sm">Сокет: ${item.socket}</div>` : ''}
+                    ${item.ram_type ? `<div class="text-gray-500 text-sm">Тип RAM: ${item.ram_type}</div>` : ''}
+                    ${item.form_factor ? `<div class="text-gray-500 text-sm">Форм-фактор: ${item.form_factor}</div>` : ''}
                 </div>
             `).join("")}
         </div>
@@ -62,14 +81,108 @@ function selectComponent(type, id) {
     if (!component) return;
 
     build[type] = component;
-    const summaryElement = document.getElementById(`summary${capitalize(type)}`);
-    if (summaryElement) {
-        summaryElement.textContent = component.title;
+    
+    // ЛОГИКА АВТОПОДБОРА
+    // Если выбран CPU — авто-подбираем MB и RAM
+    if (type === 'cpu') {
+        autoSelectCompatibleForCPU(component);
+        
+        // Перерисовываем зависимые компоненты
+        const grouped = groupAndSortComponents(components);
+        renderComponent('motherboard', grouped.motherboard || [], true);
+        renderComponent('ram', grouped.ram || [], true);
+        renderComponent('cooler', grouped.cooler || [], true);
     }
-
+    
+    // Если выбрана MB — проверяем совместимость с CPU
+    if (type === 'motherboard' && build.cpu) {
+        if (component.socket !== build.cpu.socket) {
+            // MB несовместима с CPU — меняем CPU
+            const grouped = groupAndSortComponents(components);
+            const compatibleCPU = (grouped.cpu || []).find(cpu => cpu.socket === component.socket);
+            if (compatibleCPU) {
+                build.cpu = compatibleCPU;
+                console.log(`Автозамена CPU: ${compatibleCPU.title} (сокет: ${compatibleCPU.socket})`);
+                
+                // После смены CPU — авто-подбор RAM
+                if (component.ram_type) {
+                    const compatibleRAM = (grouped.ram || []).find(ram => ram.ram_type === component.ram_type);
+                    if (compatibleRAM) {
+                        build.ram = compatibleRAM;
+                        console.log(`Автовыбор RAM: ${compatibleRAM.title} (${compatibleRAM.ram_type})`);
+                    }
+                }
+                
+                // Подбираем охлаждение по сокету
+                const compatibleCooler = (grouped.cooler || []).find(cooler => 
+                    cooler.socket === compatibleCPU.socket || cooler.socket === 'universal'
+                );
+                if (compatibleCooler) {
+                    build.cooler = compatibleCooler;
+                    console.log(`Автовыбор Cooler: ${compatibleCooler.title} (сокет: ${compatibleCooler.socket})`);
+                }
+                
+                // Перерисовываем всё
+                renderComponent('cpu', grouped.cpu || [], true);
+                renderComponent('ram', grouped.ram || [], true);
+                renderComponent('cooler', grouped.cooler || [], true);
+            }
+        } else {
+            // MB совместима — просто обновляем RAM
+            const grouped = groupAndSortComponents(components);
+            if (component.ram_type) {
+                const compatibleRAM = (grouped.ram || []).find(ram => ram.ram_type === component.ram_type);
+                if (compatibleRAM && (!build.ram || build.ram.ram_type !== component.ram_type)) {
+                    build.ram = compatibleRAM;
+                    console.log(`Автовыбор RAM: ${compatibleRAM.title} (${compatibleRAM.ram_type})`);
+                }
+            }
+            renderComponent('ram', grouped.ram || [], true);
+        }
+    }
+    
+    // Обновляем сумму в интерфейсе
     updatePrice();
+    updateAllSummaries();
+    
+    // Закрываем выпадающий список
     const dropdown = document.getElementById(`${type}Dropdown`);
     if (dropdown) dropdown.classList.add("hidden");
+    
+    // Проверяем совместимость
+    checkCompatibility();
+}
+
+// Функция автоподбора совместимых компонентов для CPU
+function autoSelectCompatibleForCPU(cpu) {
+    if (!cpu) return;
+    
+    const grouped = groupAndSortComponents(components);
+    
+    // Подбираем материнскую плату по сокету
+    const compatibleMB = (grouped.motherboard || []).find(mb => mb.socket === cpu.socket);
+    if (compatibleMB) {
+        build.motherboard = compatibleMB;
+        console.log(`Автовыбор MB: ${compatibleMB.title} (сокет: ${compatibleMB.socket})`);
+        
+        // Подбираем RAM по типу памяти материнской платы
+        if (compatibleMB.ram_type) {
+            const compatibleRAM = (grouped.ram || []).find(ram => ram.ram_type === compatibleMB.ram_type);
+            if (compatibleRAM) {
+                build.ram = compatibleRAM;
+                console.log(`Автовыбор RAM: ${compatibleRAM.title} (${compatibleRAM.ram_type})`);
+            }
+        }
+    }
+    
+    // Подбираем охлаждение по сокету (или универсальное)
+    const compatibleCooler = (grouped.cooler || []).find(cooler => 
+        cooler.socket === cpu.socket || cooler.socket === 'universal' || !cooler.socket
+    );
+    if (compatibleCooler) {
+        build.cooler = compatibleCooler;
+        console.log(`Автовыбор Cooler: ${compatibleCooler.title} (сокет: ${compatibleCooler.socket || 'универсальный'})`);
+    }
 }
 
 function updatePrice() {
@@ -83,12 +196,91 @@ function updatePrice() {
     }
 }
 
+function updateAllSummaries() {
+    const types = ["cpu", "gpu", "ram", "motherboard", "cooler", "storage", "psu", "case"];
+    types.forEach(type => {
+        const summaryElement = document.getElementById(`summary${capitalize(type)}`);
+        if (summaryElement && build[type]) {
+            summaryElement.textContent = build[type].title;
+        } else if (summaryElement) {
+            summaryElement.textContent = "Не выбран";
+        }
+    });
+}
+
 function validateBuild() {
     if (build.cpu && build.motherboard && build.cpu.socket !== build.motherboard.socket) {
-        alert("Несовместимый сокет");
+        alert("Несовместимый сокет!");
         return false;
     }
+    
+    // Проверка на наличие всех компонентов
+    const required = ["cpu", "motherboard", "ram", "psu", "case"];
+    const missing = required.filter(type => !build[type]);
+    if (missing.length > 0) {
+        alert(`Выберите все обязательные компоненты: ${missing.map(t => getTitle(t)).join(", ")}`);
+        return false;
+    }
+    
     return true;
+}
+
+function checkCompatibility() {
+    const issues = [];
+    let isCompatible = true;
+    
+    // Проверка сокета CPU и MB
+    if (build.cpu && build.motherboard) {
+        if (build.cpu.socket !== build.motherboard.socket) {
+            issues.push(`❌ Сокет CPU (${build.cpu.socket}) не совместим с сокетом MB (${build.motherboard.socket})`);
+            isCompatible = false;
+        }
+    }
+    
+    // Проверка типа RAM
+    if (build.motherboard && build.ram) {
+        if (build.motherboard.ram_type && build.ram.ram_type) {
+            if (build.ram.ram_type !== build.motherboard.ram_type) {
+                issues.push(`❌ Тип RAM (${build.ram.ram_type}) не совместим с MB (${build.motherboard.ram_type})`);
+                isCompatible = false;
+            }
+        }
+    }
+    
+    // Проверка охлаждения
+    if (build.cpu && build.cooler) {
+        if (build.cooler.socket && build.cooler.socket !== 'universal' && build.cooler.socket !== build.cpu.socket) {
+            issues.push(`⚠️ Охлаждение (сокет: ${build.cooler.socket}) не подходит для CPU (сокет: ${build.cpu.socket})`);
+        }
+    }
+    
+    // Проверка форм-фактора корпуса и материнской платы
+    if (build.case && build.motherboard) {
+        if (build.case.form_factor && build.motherboard.form_factor) {
+            // Простая проверка - обычно корпус поддерживает несколько форм-факторов
+            // Это упрощенная версия, можно доработать
+        }
+    }
+    
+    // Отображаем предупреждения
+    const warningElement = document.getElementById("compatibilityWarnings");
+    if (warningElement) {
+        if (issues.length > 0) {
+            warningElement.innerHTML = issues.join("<br>");
+            warningElement.classList.remove("hidden");
+            warningElement.style.color = "#ef4444";
+        } else if (build.cpu && build.motherboard && build.ram) {
+            warningElement.innerHTML = "Все компоненты совместимы!";
+            warningElement.classList.remove("hidden");
+            warningElement.style.color = "#4ade80";
+        } else {
+            warningElement.innerHTML = "⚠️ Выберите основные компоненты для проверки совместимости";
+            warningElement.classList.remove("hidden");
+            warningElement.style.color = "#f59e0b";
+        }
+    }
+    
+    return isCompatible;
 }
 
 // ===== 3. ДАННЫЕ И СОСТОЯНИЕ =====
@@ -161,7 +353,7 @@ async function addToCart() {
 
 // ===== 5. ЗАПУСК ПРИ ЗАГРУЗКЕ СТРАНИЦЫ =====
 async function init() {
-    // Ждем, пока Supabase точно загрузится, если скрипты идут асинхронно
+    // Ждем, пока Supabase точно загрузится
     if (typeof supabaseClient === 'undefined') {
         setTimeout(init, 100);
         return;
@@ -180,11 +372,53 @@ async function init() {
 
         // Список типов для рендера
         const types = ["cpu", "gpu", "ram", "motherboard", "cooler", "storage", "psu", "case"];
-        types.forEach(type => renderComponent(type));
+        const grouped = groupAndSortComponents(components);
+        types.forEach(type => {
+            renderComponent(type, grouped[type] || []);
+        });
+
+        // Добавляем кнопку для ручной проверки совместимости
+        const checkBtn = document.getElementById("checkCompatibilityBtn");
+        if (checkBtn) {
+            checkBtn.addEventListener("click", checkCompatibility);
+        }
+
+        // Добавляем кнопку для сброса сборки
+        const resetBtn = document.getElementById("resetBuildBtn");
+        if (resetBtn) {
+            resetBtn.addEventListener("click", resetBuild);
+        }
+
+        console.log("Приложение инициализировано");
 
     } catch (error) {
         console.error("Ошибка инициализации приложения:", error);
     }
+}
+
+// Функция сброса сборки
+function resetBuild() {
+    if (!confirm("Очистить все выбранные компоненты?")) return;
+    
+    Object.keys(build).forEach(key => {
+        build[key] = null;
+    });
+    
+    const grouped = groupAndSortComponents(components);
+    const types = ["cpu", "gpu", "ram", "motherboard", "cooler", "storage", "psu", "case"];
+    types.forEach(type => {
+        renderComponent(type, grouped[type] || []);
+    });
+    
+    updatePrice();
+    updateAllSummaries();
+    
+    const warningElement = document.getElementById("compatibilityWarnings");
+    if (warningElement) {
+        warningElement.classList.add("hidden");
+    }
+    
+    console.log("Сборка сброшена");
 }
 
 // Регистрируем старт только после полной готовности DOM
