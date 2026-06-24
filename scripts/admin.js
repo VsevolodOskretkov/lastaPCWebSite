@@ -1,5 +1,6 @@
 let editingId = null
 let isLoadingComputers = false
+let isLoadingOrders = false
 
 async function checkAdmin() {
   try {
@@ -17,7 +18,7 @@ async function checkAdmin() {
       .single()
 
     if (profileError || !profile || profile.role !== "admin") {
-      alert("⛔ Нет доступа к админ-панели")
+      alert("Нет доступа к админ-панели")
       location.href = "/index"
       return
     }
@@ -33,17 +34,19 @@ function redirectToReg() {
   }
 }
 
-// ✅ Оптимизированная загрузка компьютеров (с кэшем)
+// ============================================
+// УПРАВЛЕНИЕ ТОВАРАМИ
+// ============================================
+
 let cachedComputers = null
 let cacheTime = 0
-const CACHE_DURATION = 60 * 1000 // 1 минута для админки
+const CACHE_DURATION = 60 * 1000
 
 async function loadComputers() {
   if (isLoadingComputers) return
   isLoadingComputers = true
 
   try {
-    // Проверяем кэш
     if (cachedComputers && (Date.now() - cacheTime) < CACHE_DURATION) {
       renderComputersList(cachedComputers)
       isLoadingComputers = false
@@ -76,7 +79,7 @@ function renderComputersList(computers) {
   if (!computers || computers.length === 0) {
     container.innerHTML = `
       <div class="text-center py-12 text-gray-400 col-span-full">
-        📦 Компьютеры не найдены<br>
+         Компьютеры не найдены<br>
         <button onclick="resetForm()" class="mt-4 text-purple-400 underline">Создать первый компьютер</button>
       </div>
     `
@@ -103,11 +106,11 @@ function renderComputersList(computers) {
         <div class="flex gap-2 mt-3">
           <button onclick="editComputer('${pc.id}')" 
                   class="flex-1 bg-purple-600 text-xs py-1.5 rounded-lg hover:bg-purple-700 transition">
-            ✏️ Редакт.
+             Редакт.
           </button>
           <button onclick="deleteComputer('${pc.id}')" 
                   class="flex-1 bg-red-600/20 text-red-400 text-xs py-1.5 rounded-lg hover:bg-red-600 hover:text-white transition">
-            🗑️ Удалить
+             Удалить
           </button>
         </div>
       </div>
@@ -119,7 +122,6 @@ function renderComputersList(computers) {
   container.appendChild(fragment)
 }
 
-// ✅ Удаление компьютера
 window.deleteComputer = async function(id) {
   if (!confirm('Вы уверены, что хотите удалить этот компьютер?')) return
 
@@ -131,7 +133,7 @@ window.deleteComputer = async function(id) {
 
     if (error) throw error
 
-    alert('✅ Компьютер удален')
+    alert('Компьютер удален')
     
     cachedComputers = null
     loadComputers()
@@ -141,11 +143,10 @@ window.deleteComputer = async function(id) {
     }
   } catch (err) {
     console.error("Ошибка удаления:", err)
-    alert('❌ Ошибка удаления: ' + err.message)
+    alert('Ошибка удаления: ' + err.message)
   }
 }
 
-// ✅ Сброс формы
 window.resetForm = function() {
   editingId = null
   document.getElementById("createComputerForm").reset()
@@ -156,13 +157,12 @@ window.resetForm = function() {
   
   const submitBtn = document.querySelector('#createComputerForm button[type="submit"]')
   if (submitBtn) {
-    submitBtn.textContent = '✨ Создать компьютер'
+    submitBtn.textContent = 'Создать компьютер'
   }
   
   window.scrollTo({ top: 0, behavior: "smooth" })
 }
 
-// ✅ Авто-генерация slug из title
 function generateSlug(title) {
   return title
     .toLowerCase()
@@ -172,13 +172,12 @@ function generateSlug(title) {
     .substring(0, 100)
 }
 
-// ✅ Обработчик формы
 document.getElementById("createComputerForm")?.addEventListener("submit", async (e) => {
   e.preventDefault()
 
   const title = document.getElementById("title")?.value.trim()
   if (!title) {
-    alert("❌ Введите название компьютера")
+    alert("Введите название компьютера")
     return
   }
 
@@ -196,7 +195,7 @@ document.getElementById("createComputerForm")?.addEventListener("submit", async 
   const published = document.getElementById("published")?.checked || false
 
   if (isNaN(price) || price <= 0) {
-    alert("❌ Введите корректную цену")
+    alert("Введите корректную цену")
     return
   }
 
@@ -240,7 +239,7 @@ document.getElementById("createComputerForm")?.addEventListener("submit", async 
   const submitBtn = e.target.querySelector('button[type="submit"]')
   const originalText = submitBtn?.textContent
   if (submitBtn) {
-    submitBtn.textContent = '⏳ Сохранение...'
+    submitBtn.textContent = 'Сохранение...'
     submitBtn.disabled = true
   }
 
@@ -262,7 +261,7 @@ document.getElementById("createComputerForm")?.addEventListener("submit", async 
 
     if (error) throw error
 
-    alert(editingId ? "✅ Компьютер обновлен" : "✅ Компьютер создан")
+    alert(editingId ? "Компьютер обновлен" : "Компьютер создан")
     
     resetForm()
     cachedComputers = null
@@ -270,16 +269,15 @@ document.getElementById("createComputerForm")?.addEventListener("submit", async 
 
   } catch (err) {
     console.error("Ошибка:", err)
-    alert(`❌ Ошибка: ${err.message}`)
+    alert(`Ошибка: ${err.message}`)
   } finally {
     if (submitBtn) {
-      submitBtn.textContent = originalText || (editingId ? "🔄 Обновить компьютер" : "✨ Создать компьютер")
+      submitBtn.textContent = originalText || (editingId ? "Обновить компьютер" : "Создать компьютер")
       submitBtn.disabled = false
     }
   }
 })
 
-// ✅ Редактирование компьютера
 window.editComputer = async function(id) {
   try {
     const { data: pc, error } = await supabaseClient
@@ -315,18 +313,17 @@ window.editComputer = async function(id) {
 
     const submitBtn = document.querySelector('#createComputerForm button[type="submit"]')
     if (submitBtn) {
-      submitBtn.textContent = '🔄 Обновить компьютер'
+      submitBtn.textContent = 'Обновить компьютер'
     }
 
     window.scrollTo({ top: 0, behavior: "smooth" })
 
   } catch (err) {
     console.error("Ошибка загрузки компьютера:", err)
-    alert('❌ Ошибка загрузки данных компьютера')
+    alert(' Ошибка загрузки данных компьютера')
   }
 }
 
-// ✅ Авто-генерация slug при вводе названия
 const titleInput = document.getElementById("title")
 const slugInput = document.getElementById("slug")
 
@@ -338,7 +335,6 @@ if (titleInput && slugInput) {
   })
 }
 
-// Защита от XSS
 function escapeHtml(str) {
   if (!str) return ''
   return str
@@ -354,13 +350,180 @@ function showError() {
   if (container) {
     container.innerHTML = `
       <div class="text-center py-12 text-red-400 col-span-full">
-        ❌ Ошибка загрузки списка компьютеров<br>
+         Ошибка загрузки списка компьютеров<br>
         <button onclick="location.reload()" class="mt-4 text-purple-400 underline">Повторить</button>
       </div>
     `
   }
 }
 
-// Запуск
+// ============================================
+// УПРАВЛЕНИЕ ЗАКАЗАМИ
+// ============================================
+
+async function loadOrders() {
+  if (isLoadingOrders) return
+  isLoadingOrders = true
+
+  try {
+    const { data: orders, error } = await supabaseClient
+      .from('orders')
+      .select(`
+        id,
+        user_id,
+        total_price,
+        status,
+        payment_method,
+        payment_status,
+        delivery_address,
+        phone,
+        created_at,
+        profiles (
+          name,
+          email
+        )
+      `)
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+
+    renderOrdersList(orders || [])
+
+  } catch (err) {
+    console.error('Ошибка загрузки заказов:', err)
+    const container = document.getElementById('ordersList')
+    if (container) {
+      container.innerHTML = `
+        <div class="text-center text-red-400 py-8">
+          Ошибка загрузки заказов<br>
+          <button onclick="loadOrders()" class="mt-4 text-purple-400 underline">Повторить</button>
+        </div>
+      `
+    }
+  } finally {
+    isLoadingOrders = false
+  }
+}
+
+function renderOrdersList(orders) {
+  const container = document.getElementById('ordersList')
+  if (!container) return
+
+  if (!orders || orders.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-12 text-gray-400">
+        Заказов пока нет
+      </div>
+    `
+    return
+  }
+
+  let html = '<div class="space-y-3">'
+
+  orders.forEach(order => {
+    const createdDate = new Date(order.created_at).toLocaleDateString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+
+    const statusMap = {
+      'pending': { label: 'Ожидает', class: 'status-pending' },
+      'processing': { label: 'В обработке', class: 'status-processing' },
+      'shipped': { label: 'Отправлен', class: 'status-shipped' },
+      'delivered': { label: 'Доставлен', class: 'status-delivered' },
+      'cancelled': { label: 'Отменен', class: 'status-cancelled' }
+    }
+
+    const currentStatus = statusMap[order.status] || statusMap['pending']
+
+    html += `
+      <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4 hover:border-gray-600 transition">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div class="flex-1">
+            <div class="flex flex-wrap items-center gap-2 mb-2">
+              <span class="text-sm font-semibold text-white">Заказ #${order.id.slice(0, 8)}</span>
+              <span class="text-xs text-gray-400">${createdDate}</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs px-2 py-1 rounded-full ${currentStatus.class}">
+                ${currentStatus.label}
+              </span>
+              <span class="text-xs px-2 py-1 rounded-full bg-gray-700/50 text-gray-300">
+                ${order.payment_status === 'paid' ? 'Оплачен' : 'Не оплачен'}
+              </span>
+              <span class="text-xs px-2 py-1 rounded-full bg-gray-700/50 text-gray-300">
+                ${order.payment_method === 'cash' ? 'Наличные' : 'Карта'}
+              </span>
+            </div>
+            <div class="mt-2 text-sm text-gray-400">
+              <p>👤 ${order.profiles?.name || 'Пользователь'} (${order.profiles?.email || 'нет email'})</p>
+              <p>📍 ${order.delivery_address || 'Самовывоз'}</p>
+              ${order.phone ? `<p>📱 ${order.phone}</p>` : ''}
+            </div>
+          </div>
+          <div class="flex flex-col items-end gap-2">
+            <p class="text-xl font-bold text-purple-400">${order.total_price.toLocaleString()} ₽</p>
+            <select onchange="updateOrderStatus('${order.id}', this.value)" 
+                    class="bg-gray-700 text-white text-sm px-3 py-1.5 rounded-lg border border-gray-600 focus:border-purple-500 outline-none">
+              <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Ожидает</option>
+              <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>В обработке</option>
+              <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Отправлен</option>
+              <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Доставлен</option>
+              <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Отменен</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    `
+  })
+
+  html += '</div>'
+  container.innerHTML = html
+}
+
+// Обновление статуса заказа
+window.updateOrderStatus = async function(orderId, newStatus) {
+  try {
+    const { error } = await supabaseClient
+      .from('orders')
+      .update({ 
+        status: newStatus,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', orderId)
+
+    if (error) throw error
+
+    // Показываем уведомление
+    const statusMap = {
+      'pending': 'Ожидает',
+      'processing': 'В обработке',
+      'shipped': 'Отправлен',
+      'delivered': 'Доставлен',
+      'cancelled': 'Отменен'
+    }
+    
+    alert(`Статус заказа обновлен на "${statusMap[newStatus]}"`)
+    
+    // Перезагружаем заказы
+    await loadOrders()
+
+  } catch (err) {
+    console.error('Ошибка обновления статуса:', err)
+    alert('Ошибка обновления статуса: ' + err.message)
+    
+    // Перезагружаем заказы чтобы вернуть правильный статус в select
+    await loadOrders()
+  }
+}
+
+// ============================================
+// ЗАПУСК
+// ============================================
+
 checkAdmin()
 loadComputers()
+loadOrders()
