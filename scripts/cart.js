@@ -430,7 +430,7 @@ window.checkout = async function() {
     localStorage.setItem('checkout_timestamp', Date.now().toString());
     
     // Перенаправляем на страницу оформления заказа
-    window.location.href = '/views/pages/opl.html';
+    window.location.href = '/opl.html';
     
   } catch (err) {
     console.error('Ошибка оформления заказа:', err);
@@ -565,7 +565,6 @@ window.checkout = async function() {
 function showEmptyCart(container) {
   container.innerHTML = `
     <div class="text-center py-12 sm:py-16">
-      <div class="text-4xl sm:text-6xl mb-4">🛒</div>
       <h3 class="text-lg sm:text-xl text-gray-400 mb-2">Корзина пуста</h3>
       <p class="text-gray-500 text-sm sm:text-base mb-6">Добавьте товары, чтобы оформить заказ</p>
       <a href="/catalog" class="bg-purple-600 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl hover:bg-purple-700 transition inline-block text-sm sm:text-base">

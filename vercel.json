@@ -48,6 +48,32 @@
       ]
     },
     {
+      "source": "/script/(.*)\\.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, immutable"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/javascript"
+        }
+      ]
+    },
+    {
+      "source": "/js/(.*)\\.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, immutable"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/javascript"
+        }
+      ]
+    },
+    {
       "source": "/src/img/Pc/(.*)\\.(webp|jpg|jpeg|png|svg)",
       "headers": [
         {
@@ -106,6 +132,10 @@
     {
       "source": "/admin",
       "destination": "/views/pages/admin.html"
+    },
+    {
+      "source": "/opl",
+      "destination": "/views/pages/opl.html"
     }
   ],
   "redirects": [
