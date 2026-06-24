@@ -191,7 +191,7 @@ function renderLocalCart(localCart) {
       <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
         <div class="w-full lg:w-48 h-40 sm:h-48 lg:h-52 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center relative overflow-hidden">
           <img 
-              src="/src/img/mainView/defoultPC.webp" 
+              src="/src/img/PC/defoultPC.webp" 
               class="w-full h-full object-cover">
         </div>
         
@@ -262,6 +262,10 @@ function createComputerCard(item, pc, itemTotal) {
                 <p class="text-gray-500 text-[10px] sm:text-sm mb-0.5 sm:mb-1">RAM</p>
                 <p class="text-[11px] sm:text-sm">${escapeHtml(pc.ram || '—')}</p>
               </div>
+              <div class="bg-[#23252b] p-3 sm:p-4 rounded-xl">
+                <p class="text-gray-500 text-[10px] sm:text-sm mb-0.5 sm:mb-1">RAM</p>
+                <p class="text-[11px] sm:text-sm">${escapeHtml(pc.storage || '—')}</p>
+              </div>
             </div>
           </div>
 
@@ -304,7 +308,7 @@ function createCustomBuildCard(item, build, components, itemTotal) {
     <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
       <div class="w-full lg:w-48 h-40 sm:h-48 lg:h-52 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center relative overflow-hidden">
         <img 
-            src="/src/img/mainView/defoultPC.webp" 
+            src="/src/img/PC/defoultPC.webp" 
             class="w-full h-full object-cover">
       </div>
       
