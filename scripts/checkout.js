@@ -16,17 +16,14 @@ let currentUser = null;
 let cartItems = [];
 let selectedPayment = 'cash';
 
-
-
 // Проверка инициализации
 if (!supabaseClient) {
   console.error('Supabase не инициализирован!');
 }
 
-// Загрузка профиля пользователя - ИСПРАВЛЕНО
+// Загрузка профиля пользователя
 async function loadUserProfile() {
   try {
-    // Используем supabaseClient вместо supabase
     const { data: { session }, error } = await supabaseClient.auth.getSession();
     
     if (error || !session) {
@@ -67,7 +64,7 @@ function displayProfile(profile) {
   }
 }
 
-// Загрузка корзины - ИСПРАВЛЕНО
+// Загрузка корзины
 async function loadCart() {
   try {
     const { data: { session } } = await supabaseClient.auth.getSession();
@@ -92,13 +89,12 @@ async function loadCart() {
           id,
           title,
           price,
-          image_url
+          image
         ),
         custom_builds (
           id,
           title,
-          total_price,
-          image_url
+          total_price
         )
       `)
       .eq('user_id', session.user.id);
@@ -139,16 +135,15 @@ function renderCart() {
   cartItems.forEach(item => {
     let title = 'Товар';
     let price = 0;
-    let imageUrl = '/src/img/default-product.jpg';
+    let imageUrl = '/src/img/defoult.webp';
     
     if (item.computer_id && item.computers) {
       title = item.computers.title || 'Готовый ПК';
       price = item.computers.price || 0;
-      imageUrl = item.computers.image_url || imageUrl;
+      imageUrl = item.computers.image || imageUrl;
     } else if (item.custom_build_id && item.custom_builds) {
       title = item.custom_builds.title || 'Сборка';
       price = item.custom_builds.total_price || 0;
-      imageUrl = item.custom_builds.image_url || imageUrl;
     }
     
     const itemTotal = price * item.quantity;
@@ -156,13 +151,18 @@ function renderCart() {
     count += item.quantity;
     
     html += `
-      <div class="flex gap-3 items-center p-2 bg-gray-900/50 rounded-lg">
-        <img src="${imageUrl}" alt="${title}" class="w-12 h-12 object-cover rounded-lg flex-shrink-0">
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-bold truncate">${title}</p>
-          <p class="text-xs text-gray-400">${item.quantity} × ${price.toLocaleString()} ₽</p>
+      <div class="flex gap-3 p-3 bg-gray-800 rounded-xl">
+        <img
+          src="${imageUrl}"
+          alt="${title}"
+          class="w-16 h-16 rounded-lg object-cover"
+          onerror="this.src='/src/img/defoult.webp'"
+        >
+        <div class="flex-1">
+          <p class="font-semibold text-white">${title}</p>
+          <p class="text-sm text-gray-400">${item.quantity} × ${price.toLocaleString()} ₽</p>
         </div>
-        <p class="text-sm font-bold text-purple-400 whitespace-nowrap">${itemTotal.toLocaleString()} ₽</p>
+        <div class="font-bold text-purple-400">${itemTotal.toLocaleString()} ₽</div>
       </div>
     `;
   });
@@ -186,7 +186,7 @@ paymentOptions.forEach(option => {
   });
 });
 
-// Оформление заказа - ИСПРАВЛЕНО
+// Оформление заказа
 async function handleCheckout() {
   try {
     const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
@@ -255,6 +255,7 @@ async function handleCheckout() {
       });
     }
     
+    // Если выбран способ оплаты картой - создаем платеж через Robokassa
     if (selectedPayment === 'card') {
       const response = await fetch('/api/robokassa', {
         method: 'POST',
@@ -280,15 +281,17 @@ async function handleCheckout() {
       window.location.href = data.url;
       
     } else {
+      // === ОПЛАТА НАЛИЧНЫМИ ===
+      
+      // 1. Создаем заказ
       const orderData = {
         user_id: session.user.id,
-        items: orderItems,
-        total_amount: totalAmount,
+        total_price: totalAmount,
+        payment_method: 'cash',
+        payment_status: 'unpaid',
+        status: 'pending',
         delivery_address: address,
         phone: phone,
-        comment: deliveryComment.value || '',
-        payment_method: 'cash',
-        status: 'pending',
         created_at: new Date().toISOString()
       };
       
@@ -300,6 +303,24 @@ async function handleCheckout() {
       
       if (orderError) throw orderError;
       
+      // 2. Создаем позиции заказа (order_items)
+      const orderItemsData = cartItems.map(item => ({
+        order_id: order.id,
+        computer_id: item.computer_id || null,
+        custom_build_id: item.custom_build_id || null,
+        quantity: item.quantity,
+        price: item.computers 
+          ? item.computers.price 
+          : item.custom_builds.total_price
+      }));
+      
+      const { error: itemsError } = await supabaseClient
+        .from('order_items')
+        .insert(orderItemsData);
+      
+      if (itemsError) throw itemsError;
+      
+      // 3. Очищаем корзину
       const { error: clearError } = await supabaseClient
         .from('cart_items')
         .delete()
@@ -307,13 +328,14 @@ async function handleCheckout() {
       
       if (clearError) throw clearError;
       
-      alert('Заказ успешно оформлен! Ожидайте звонка от менеджера.');
+      // 4. Показываем сообщение об успехе
+      alert('✅ Заказ успешно оформлен! Ожидайте звонка от менеджера.');
       window.location.href = '/profile';
     }
     
   } catch (err) {
     console.error('Ошибка оформления заказа:', err);
-    alert('Ошибка: ' + (err.message || 'Неизвестная ошибка'));
+    alert('❌ Ошибка: ' + (err.message || 'Неизвестная ошибка'));
   } finally {
     checkoutBtn.disabled = false;
     checkoutBtn.innerHTML = 'Оформить заказ';
