@@ -187,7 +187,9 @@ if (paymentOptions && paymentOptions.length > 0) {
   });
 }
 
-// Оформление заказа
+// ============================================
+// ОФОРМЛЕНИЕ ЗАКАЗА (БЕЗ ТЕЛЕФОНА)
+// ============================================
 async function handleCheckout() {
   try {
     const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
@@ -206,25 +208,8 @@ async function handleCheckout() {
     // Адрес самовывоза (фиксированный)
     const address = 'г. Санкт-Петербург, ул. Коллонтай, 21к1, 8 подъезд, 1 этаж';
     
-    // Получаем телефон из профиля
-    let phone = '';
-    const { data: profile } = await supabaseClient
-      .from('profiles')
-      .select('phone')
-      .eq('id', session.user.id)
-      .single();
-    
-    if (profile?.phone) {
-      phone = profile.phone;
-    } else {
-      // Если телефона нет в профиле, запрашиваем
-      phone = prompt('Укажите номер телефона для связи:');
-      if (!phone || phone.trim() === '') {
-        alert('Номер телефона обязателен для оформления заказа');
-        return;
-      }
-      phone = phone.trim();
-    }
+    // Получаем email пользователя
+    const userEmail = session.user.email || '';
     
     if (checkoutBtn) {
       checkoutBtn.disabled = true;
@@ -271,7 +256,7 @@ async function handleCheckout() {
           totalAmount: totalAmount,
           userId: session.user.id,
           deliveryAddress: address,
-          phone: phone,
+          email: userEmail,
           comment: ''
         })
       });
@@ -295,7 +280,7 @@ async function handleCheckout() {
         payment_status: 'unpaid',
         status: 'pending',
         delivery_address: address,
-        phone: phone,
+        phone: null, // Телефон не требуется
         created_at: new Date().toISOString()
       };
       
@@ -307,22 +292,31 @@ async function handleCheckout() {
       
       if (orderError) throw orderError;
       
-      // 2. Создаем позиции заказа (order_items)
-      const orderItemsData = cartItems.map(item => ({
-        order_id: order.id,
-        computer_id: item.computer_id || null,
-        custom_build_id: item.custom_build_id || null,
-        quantity: item.quantity,
-        price: item.computers 
-          ? item.computers.price 
-          : item.custom_builds.total_price
-      }));
+      // 2. Создаем позиции заказа (order_items) по одной
+      console.log('Создание позиций заказа для order_id:', order.id);
       
-      const { error: itemsError } = await supabaseClient
-        .from('order_items')
-        .insert(orderItemsData);
-      
-      if (itemsError) throw itemsError;
+      for (const item of cartItems) {
+        const orderItemData = {
+          order_id: order.id,
+          computer_id: item.computer_id || null,
+          custom_build_id: item.custom_build_id || null,
+          quantity: item.quantity,
+          price: item.computers 
+            ? item.computers.price 
+            : item.custom_builds.total_price
+        };
+        
+        console.log('Вставка позиции:', orderItemData);
+        
+        const { error: itemError } = await supabaseClient
+          .from('order_items')
+          .insert(orderItemData);
+        
+        if (itemError) {
+          console.error('Ошибка вставки позиции:', itemError);
+          throw itemError;
+        }
+      }
       
       // 3. Очищаем корзину
       const { error: clearError } = await supabaseClient
@@ -348,7 +342,9 @@ async function handleCheckout() {
   }
 }
 
-// Инициализация
+// ============================================
+// ИНИЦИАЛИЗАЦИЯ
+// ============================================
 document.addEventListener('DOMContentLoaded', async function() {
   // Проверяем, что supabaseClient доступен
   if (typeof supabaseClient === 'undefined') {
