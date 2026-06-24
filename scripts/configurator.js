@@ -9,7 +9,22 @@ const build = {
   case: null
 };
 
-    let components = [];
+function getTitle(type) {
+  const titles = {
+    cpu: "Процессор",
+    gpu: "Видеокарта",
+    ram: "Оперативная память",
+    motherboard: "Материнская плата",
+    cooler: "Охлаждение",
+    storage: "Накопитель",
+    psu: "Блок питания",
+    case: "Корпус"
+  };
+
+  return titles[type] || type;
+}
+
+let components = [];
 
 async function loadComponents() {
   const { data, error } = await supabaseClient
@@ -92,20 +107,7 @@ function selectComponent(type, id) {
 
   build[type] = component;
 
-  function getTitle(type) {
-  const titles = {
-    cpu: "Процессор",
-    gpu: "Видеокарта",
-    ram: "Оперативная память",
-    motherboard: "Материнская плата",
-    cooler: "Охлаждение",
-    storage: "Накопитель",
-    psu: "Блок питания",
-    case: "Корпус"
-  };
 
-  return titles[type] || type;
-}
 
   document.getElementById(
     `summary${capitalize(type)}`
