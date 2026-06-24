@@ -115,6 +115,7 @@ div.innerHTML = `
   </div>
 `
 fragment.appendChild(div)
+})
 
   // Один раз вставляем всё вместе
   container.innerHTML = ''

@@ -223,6 +223,7 @@ div.innerHTML = `
 </div>
 `
 container.appendChild(div)
+  })
 
   const totalDiv = document.createElement('div')
   totalDiv.className = 'mt-12 text-right'
