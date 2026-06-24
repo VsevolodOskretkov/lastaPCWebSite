@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LASTA.PC - Каталог</title>
   <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
-  <!-- Подключение локальных шрифтов Tektur -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
+  
   <style>
     @font-face {
       font-family: 'Tektur Regular';
@@ -23,24 +24,52 @@
       font-display: swap;
     }
     
-    /* Применение шрифтов */
     body {
       font-family: 'Tektur Regular', monospace, sans-serif;
+      overflow-x: hidden;
     }
     
     h1, h2, h3, h4, .font-bold, button, nav a, .tracking-widest {
       font-family: 'Tektur Bold', monospace, sans-serif;
     }
     
-    /* Для заголовков в карточках */
     .text-xl, .text-5xl, .text-2xl, .text-lg {
       font-family: 'Tektur Bold', monospace, sans-serif;
     }
+
+    /* Улучшение кликабельности на мобильных */
+    button, a {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Адаптивные настройки */
+    @media (max-width: 640px) {
+      .hero-padding {
+        padding-top: 6rem;
+        padding-bottom: 6rem;
+      }
+      .hero-title {
+        font-size: 2.25rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .section-padding {
+        padding-top: 3rem;
+        padding-bottom: 3rem;
+      }
+      .section-title {
+        font-size: 1.5rem;
+      }
+    }
   </style>
-<body class="bg-gray-950 text-white font-sans">
+</head>
+
+<body class="bg-gray-950 text-white font-sans overflow-x-hidden">
 
 <!-- HEADER -->
-<header class="flex items-center justify-between px-4 md:px-12 py-3 border-b border-gray-800">
+<header class="flex items-center justify-between px-4 md:px-12 py-2 md:py-3 border-b border-gray-800">
   <a href="/" class="text-xl md:text-2xl font-bold tracking-widest">LASTA.PC</a>
 
   <nav class="hidden md:flex gap-8 text-sm text-gray-300">
@@ -57,8 +86,8 @@
   </button>
 
   <!-- Мобильное меню (выпадающее) -->
-  <div id="mobileMenu" class="hidden md:hidden absolute top-16 left-0 right-0 bg-gray-900 border-b border-gray-800 z-50">
-    <div class="flex flex-col p-4 gap-4">
+  <div id="mobileMenu" class="hidden md:hidden absolute top-14 md:top-16 left-0 right-0 bg-gray-900 border-b border-gray-800 z-50">
+    <div class="flex flex-col p-4 gap-3">
       <a href="/catalog" class="text-gray-300 hover:text-white transition py-2 px-4 hover:bg-gray-800 rounded-lg">Готовые решения</a>
       <a href="/configuration" class="text-gray-300 hover:text-white transition py-2 px-4 hover:bg-gray-800 rounded-lg">Конструктор</a>
       <a href="/faq" class="text-gray-300 hover:text-white transition py-2 px-4 hover:bg-gray-800 rounded-lg">Вопросы</a>
@@ -98,7 +127,7 @@
   </div>
 </section>
 
-
+<!-- SILVER -->
 <section class="bg-[#111214] py-8 sm:py-12 md:py-16 text-white" id="silver">
   <div class="max-w-[1400px] mx-auto px-4 sm:px-6">
 
@@ -114,6 +143,7 @@
   </div>
 </section>
 
+<!-- GOLD -->
 <section class="bg-[#111214] py-8 sm:py-12 md:py-16 text-white" id="gold">
   <div class="max-w-[1400px] mx-auto px-4 sm:px-6">
 
@@ -129,6 +159,7 @@
   </div>
 </section>
 
+<!-- PLATINA -->
 <section class="bg-[#111214] py-8 sm:py-12 md:py-16 text-white" id="platina">
   <div class="max-w-[1400px] mx-auto px-4 sm:px-6">
 
@@ -144,11 +175,8 @@
   </div>
 </section>
 
-
-
 <!-- FOOTER -->
-<footer class="border-t border-black/40 text-gray-400 text-sm">
-
+<footer class="border-t border-black/40 text-gray-400 text-sm bg-gray-950">
   <div class="max-w-[1400px] mx-auto px-4 md:px-6 py-8 md:py-10 flex flex-col md:flex-row justify-between gap-6 md:gap-8">
 
     <!-- LEFT -->
@@ -196,6 +224,29 @@
 <script src="/scripts/supabase.js"></script>
 <script src="/scripts/catalog.js"></script>
 <script src="/scripts/cart.js"></script>
+
+<script>
+// Мобильное меню
+document.getElementById('mobileMenuBtn')?.addEventListener('click', function() {
+  const menu = document.getElementById('mobileMenu');
+  menu.classList.toggle('hidden');
+});
+
+// Закрываем меню при клике на ссылку
+document.querySelectorAll('#mobileMenu a').forEach(link => {
+  link.addEventListener('click', function() {
+    document.getElementById('mobileMenu').classList.add('hidden');
+  });
+});
+
+supabaseClient.auth.getSession().then(({ data }) => {
+  if (!data.session) {
+    console.log("Пользователь не авторизован")
+  } else {
+    console.log("Пользователь:", data.session.user)
+  }
+});
+</script>
 
 </body>
 </html>
