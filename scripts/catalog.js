@@ -93,29 +93,28 @@ function renderComputers(computers, containerId) {
     const safeRam = escapeHtml(pc.ram || '—')
     const safeStorage = escapeHtml(pc.storage || '—')
     
-    div.innerHTML = `
-      <img src="${pc.image}" 
-           loading="lazy"
-           decoding="async"
-           class="h-60 mx-auto mb-6 object-contain"
-           onerror="this.src='/src/img/placeholder.webp'">
-      <h3 class="tracking-[3px] text-sm mb-2 text-gray-200">${safeTitle}</h3>
-      <p class="text-gray-400 text-xs mb-4">${pc.price.toLocaleString()}₽</p>
-      <button onclick="window.location.href='/product?id=${pc.id}'" 
-              class="border border-purple-500 text-purple-400 px-6 py-2 rounded-lg text-sm mb-6 hover:bg-purple-500 hover:text-white transition">
-        Подробнее
-      </button>
-      <div class="flex justify-center">
-        <div class="text-[11px] text-gray-400 leading-5 space-y-1 text-left">
-          <p>Процессор<br><span class="text-gray-300">${safeCpu}</span></p>
-          <p>Видеокарта<br><span class="text-gray-300">${safeGpu}</span></p>
-          <p>Оперативная память<br><span class="text-gray-300">${safeRam}</span></p>
-          <p>SSD накопитель<br><span class="text-gray-300">${safeStorage}</span></p>
-        </div>
-      </div>
-    `
-    fragment.appendChild(div)
-  })
+div.innerHTML = `
+  <img src="${pc.image}" 
+       loading="lazy"
+       decoding="async"
+       class="h-40 sm:h-48 md:h-60 mx-auto mb-4 md:mb-6 object-contain"
+       onerror="this.src='/src/img/placeholder.webp'">
+  <h3 class="tracking-[2px] sm:tracking-[3px] text-xs sm:text-sm mb-2 text-gray-200 text-center">${safeTitle}</h3>
+  <p class="text-gray-400 text-xs sm:text-sm mb-3 md:mb-4 text-center">${pc.price.toLocaleString()}₽</p>
+  <button onclick="window.location.href='/product?id=${pc.id}'" 
+          class="border border-purple-500 text-purple-400 px-4 sm:px-6 py-2 rounded-lg text-xs sm:text-sm mb-4 md:mb-6 hover:bg-purple-500 hover:text-white transition w-full sm:w-auto">
+    Подробнее
+  </button>
+  <div class="flex justify-center">
+    <div class="text-[10px] sm:text-[11px] text-gray-400 leading-4 sm:leading-5 space-y-1 sm:space-y-1.5 text-left w-full px-2 sm:px-0">
+      <p>Процессор<br><span class="text-gray-300 text-[11px] sm:text-[13px]">${safeCpu}</span></p>
+      <p>Видеокарта<br><span class="text-gray-300 text-[11px] sm:text-[13px]">${safeGpu}</span></p>
+      <p>Оперативная память<br><span class="text-gray-300 text-[11px] sm:text-[13px]">${safeRam}</span></p>
+      <p>SSD накопитель<br><span class="text-gray-300 text-[11px] sm:text-[13px]">${safeStorage}</span></p>
+    </div>
+  </div>
+`
+fragment.appendChild(div)
 
   // Один раз вставляем всё вместе
   container.innerHTML = ''

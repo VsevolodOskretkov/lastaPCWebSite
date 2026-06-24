@@ -185,41 +185,44 @@ function renderLocalCart(localCart) {
   localCart.forEach(item => {
     total += item.totalPrice || 0
     
-    const div = document.createElement('div')
-    div.className = 'bg-[#1a1b1f] border border-purple-800 rounded-3xl p-6 w-full mb-6'
-    div.innerHTML = `
-      <div class="flex flex-col lg:flex-row gap-8">
-        <div class="w-full lg:w-48 h-52 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center">
-          <div class="text-center">
-            <span class="text-5xl">🖥️</span>
-            <p class="text-white mt-2 font-medium">Кастомная сборка</p>
-          </div>
+const div = document.createElement('div')
+div.className = 'bg-[#1a1b1f] rounded-3xl p-6 w-full mb-6'
+div.innerHTML = `
+<div class="flex flex-col lg:flex-row gap-8">
+    <div class="w-full lg:w-48 h-52 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center relative overflow-hidden">
+        <img 
+            src="/src/img/mainView/defoultPC.webp" 
+            alt="Кастомная сборка" 
+            class="w-full h-full object-cover"
+        >
+        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+            <p class="text-white font-medium text-center">Кастомная сборка</p>
         </div>
+    </div>
         
-        <div class="flex-1">
-          <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+    <div class="flex-1">
+        <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
             <div>
-              <div class="flex items-center gap-3 mb-3">
-                <h2 class="text-3xl">${escapeHtml(item.name)}</h2>
-                <span class="bg-purple-600 text-xs px-3 py-1 rounded-full">Кастом</span>
-                ${!item.isInDB ? '<span class="bg-yellow-600 text-xs px-3 py-1 rounded-full">Локально</span>' : ''}
-              </div>
-              <p class="text-gray-400 text-lg mb-6">${(item.totalPrice || 0).toLocaleString("ru-RU")} ₽</p>
-              <p class="text-gray-500 text-sm">Войдите в аккаунт, чтобы сохранить сборку в облаке</p>
+                <div class="flex items-center gap-3 mb-3">
+                    <h2 class="text-3xl">${escapeHtml(item.name)}</h2>
+                    <span class="bg-purple-600 text-xs px-3 py-1 rounded-full">Кастом</span>
+                    ${!item.isInDB ? '<span class="bg-yellow-600 text-xs px-3 py-1 rounded-full">Локально</span>' : ''}
+                </div>
+                <p class="text-gray-400 text-lg mb-6">${(item.totalPrice || 0).toLocaleString("ru-RU")} ₽</p>
+                <p class="text-gray-500 text-sm">Войдите в аккаунт, чтобы сохранить сборку в облаке</p>
             </div>
 
             <div class="flex flex-col items-end gap-4">
-              <button onclick="removeLocalItem(${item.id})" 
-                      class="bg-red-600 px-6 py-3 rounded-2xl hover:bg-red-700 transition">
-                 Удалить
-              </button>
+                <button onclick="removeLocalItem(${item.id})" 
+                        class="bg-red-600 px-6 py-3 rounded-2xl hover:bg-red-700 transition">
+                    Удалить
+                </button>
             </div>
-          </div>
         </div>
-      </div>
-    `
-    container.appendChild(div)
-  })
+    </div>
+</div>
+`
+container.appendChild(div)
 
   const totalDiv = document.createElement('div')
   totalDiv.className = 'mt-12 text-right'
