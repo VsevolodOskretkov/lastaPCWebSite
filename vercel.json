@@ -1,0 +1,118 @@
+{
+  "version": 2,
+  "name": "lasta-pc-configurator",
+  "builds": [
+    {
+      "src": "**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    },
+    {
+      "source": "/views/pages/(.*)\\.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/scripts/(.*)\\.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, immutable"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/javascript"
+        }
+      ]
+    },
+    {
+      "source": "/src/img/Pc/(.*)\\.(webp|jpg|jpeg|png|svg)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/favicon.ico",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, immutable"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/views/pages/index.html"
+    },
+    {
+      "source": "/index",
+      "destination": "/views/pages/index.html"
+    },
+    {
+      "source": "/configuration",
+      "destination": "/views/pages/configurator.html"
+    },
+    {
+      "source": "/catalog",
+      "destination": "/views/pages/catalog.html"
+    },
+    {
+      "source": "/faq",
+      "destination": "/views/pages/faq.html"
+    },
+    {
+      "source": "/cart",
+      "destination": "/views/pages/cart.html"
+    },
+    {
+      "source": "/profile",
+      "destination": "/views/pages/profile.html"
+    },
+    {
+      "source": "/product",
+      "destination": "/views/pages/product.html"
+    },
+    {
+      "source": "/reg",
+      "destination": "/views/pages/reg.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/views/pages/admin.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/old/(.*)",
+      "destination": "/$1",
+      "permanent": false
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Профиль | LASTA.PC</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
+
+
+  <style>
+    @font-face {
+      font-family: 'Tektur Regular';
+      src: url('/src/Fonts/Tektur-Regular.ttf') format('truetype');
+    }
+
+    @font-face {
+      font-family: 'Tektur Bold';
+      src: url('/src/Fonts/Tektur-Bold.ttf') format('truetype');
+      font-weight: bold;
+    }
+
+    body {
+      font-family: 'Tektur Regular', monospace, sans-serif;
+    }
+
+    h1, h2, h3, h4, .font-bold, button, nav a, .tracking-widest {
+      font-family: 'Tektur Bold', monospace, sans-serif;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-900 text-white font-sans">
+
+<!-- HEADER -->
+<header class="flex items-center justify-between px-12 py-1 border-b border-gray-800">
+  <a href="/" class="text-xl font-bold tracking-widest">LASTA.PC</a>
+
+  <nav class="hidden md:flex gap-8 text-sm text-gray-300">
+    <a href="/catalog" class="hover:text-white">Готовые решения</a>
+    <a href="/configuration" class="hover:text-white">Конструктор</a>
+    <a href="/faq" class="hover:text-white">Вопросы</a>
+  </nav>
+
+<div class="flex gap-4">
+<span class="cursor-pointer hover:text-purple-500 transition" onclick="window.location.href='/profile'">
+  <img src="/src/img/svg/user.svg" alt="Профиль" class="w-11 h-11">
+</span>
+<a href="/cart" class="cursor-pointer hover:text-purple-500 transition block"> 
+    <img src="/src/img/svg/shopping-cart.svg" alt="Корзина" class="w-11 h-11"> 
+</a>
+
+  
+</div>
+</header>
+
+<!-- PROFILE SECTION -->
+<section class="max-w-7xl mx-auto px-4 md:px-8 py-16">
+
+  <div class="grid lg:grid-cols-3 gap-8">
+
+    <!-- LEFT - ИНФОРМАЦИЯ -->
+    <div class="lg:col-span-2 bg-gray-900 border border-gray-800 rounded-2xl p-8">
+
+      <h2 class="text-2xl mb-8 text-purple-400">
+        Информация о пользователе
+      </h2>
+
+      <div class="space-y-6">
+
+        <div class="border-b border-gray-800 pb-4">
+          <p class="text-gray-400 text-sm mb-2">Имя</p>
+          <p id="profileName" class="text-xl md:text-2xl font-semibold">Загрузка...</p>
+        </div>
+
+        <div class="border-b border-gray-800 pb-4">
+          <p class="text-gray-400 text-sm mb-2">Email</p>
+          <p id="profileEmail" class="text-xl md:text-2xl break-all">Загрузка...</p>
+        </div>
+
+        <div class="border-b border-gray-800 pb-4">
+          <p class="text-gray-400 text-sm mb-2">Роль</p>
+          <p id="profileRole" class="text-xl md:text-2xl text-purple-400">Загрузка...</p>
+        </div>
+
+        <!-- Управление аккаунтом -->
+        <div class="pt-4">
+          <p class="text-gray-400 text-sm mb-4">Управление аккаунтом</p>
+          <div class="flex flex-col sm:flex-row gap-4">
+
+            <!-- ADMIN -->
+            <a
+              href="/admin"
+              id="adminButton"
+              class="hidden border border-purple-500 text-purple-400 px-6 py-3 rounded-xl hover:bg-purple-500 hover:text-white transition text-center"
+            >
+              Админ панель
+            </a>
+
+            <!-- LOGOUT -->
+            <button
+              id="logoutBtn"
+              class="border border-red-500 text-red-400 px-6 py-3 rounded-xl hover:bg-red-500 hover:text-white transition cursor-pointer"
+            >
+              Выйти из аккаунта
+            </button>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- RIGHT - ИСТОРИЯ ЗАКАЗОВ -->
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8">
+
+      <h2 class="text-2xl mb-8">
+        История заказов
+      </h2>
+
+      <div class="border border-dashed border-gray-700 rounded-2xl p-12 text-center">
+
+        <svg class="w-16 h-16 mx-auto mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+        </svg>
+
+        <p class="text-gray-400 text-lg">
+          У вас пока нет заказов
+        </p>
+
+        <a href="/catalog" class="inline-block mt-6 text-purple-400 hover:text-purple-300 transition text-sm">
+          Перейти в каталог →
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+  <script src="/scripts/supabase.js"></script>
+  <script src="/scripts/profile.js"></script> 
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Конструктор ПК | LASTA.PC</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
+
+
+  <style>
+    @font-face {
+      font-family: 'Tektur Regular';
+      src: url('/src/Fonts/Tektur-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    @font-face {
+      font-family: 'Tektur Bold';
+      src: url('/src/Fonts/Tektur-Bold.ttf') format('truetype');
+      font-weight: bold;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    body {
+      font-family: 'Tektur Regular', monospace, sans-serif;
+    }
+    
+    h1, h2, h3, h4, .font-bold, button, nav a, .tracking-widest {
+      font-family: 'Tektur Bold', monospace, sans-serif;
+    }
+    
+    .text-xl, .text-5xl, .text-2xl, .text-lg {
+      font-family: 'Tektur Bold', monospace, sans-serif;
+    }
+    
+    @layer base {
+      html {
+        scroll-behavior: smooth;
+      }
+    }
+    
+    .left-column {
+      width: 100%;
+      min-width: 0;
+    }
+    
+    .component-container {
+      position: relative;
+    }
+    
+    .component-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background-color: #18191d;
+      border: 1px solid #374151;
+      border-radius: 1rem;
+      margin-top: 0.5rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .component-dropdown::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .component-dropdown::-webkit-scrollbar-track {
+      background: #2d2d2d;
+      border-radius: 4px;
+    }
+    
+    .component-dropdown::-webkit-scrollbar-thumb {
+      background: #7c3aed;
+      border-radius: 4px;
+    }
+    
+    .component-dropdown:not(.hidden) {
+      animation: fadeInDown 0.2s ease-out;
+    }
+    
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    body.no-scroll {
+      overflow: hidden;
+    }
+    
+    .component-container button svg {
+      transition: transform 0.2s ease;
+    }
+    
+    #summaryCpu, #summaryGpu, #summaryRam, 
+    #summaryMotherboard, #summaryCooler, 
+    #summaryStorage, #summaryPsu, #summaryCase {
+      color: #d1d5db;
+      font-size: 0.875rem;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body class="bg-gray-950 text-white font-sans">
+<!-- HEADER -->
+<header class="flex items-center justify-between px-12 py-1 border-b border-gray-800">
+  <a href="/" class="text-xl font-bold tracking-widest">LASTA.PC</a>
+
+  <nav class="hidden md:flex gap-8 text-sm text-gray-300">
+    <a href="/catalog" class="hover:text-white">Готовые решения</a>
+    <a href="/configuration" class="hover:text-white">Конструктор</a>
+    <a href="/faq" class="hover:text-white">Вопросы</a>
+  </nav>
+
+  <div class="flex gap-4">
+    <span class="cursor-pointer hover:text-purple-500 transition" onclick="window.location.href='/profile'">
+      <img src="/src/img/svg/user.svg" alt="Профиль" class="w-11 h-11">
+    </span>
+    <a href="/cart" class="cursor-pointer hover:text-purple-500 transition block"> 
+      <img src="/src/img/svg/shopping-cart.svg" alt="Корзина" class="w-11 h-11"> 
+    </a>
+  </div>
+</header>
+
+<!-- MAIN -->
+<section class="max-w-[2000px] mx-auto px-20 py-10">
+  <div class="grid lg:grid-cols-[400px_1fr_500px] xl:grid-cols-[450px_1fr_550px] gap-6">
+
+    <!-- LEFT -->
+    <div class="space-y-5 left-column">
+      <div id="cpuContainer" class="component-container"></div>
+      <div id="gpuContainer" class="component-container"></div>
+      <div id="ramContainer" class="component-container"></div>
+      <div id="motherboardContainer" class="component-container"></div>
+      <div id="coolerContainer" class="component-container"></div>
+      <div id="storageContainer" class="component-container"></div>
+      <div id="psuContainer" class="component-container"></div>
+      <div id="caseContainer" class="component-container"></div>
+    </div>
+
+    <!-- CENTER -->
+    <div class="flex items-center justify-center">
+      <div class="relative">
+        <svg 
+          width="400" 
+          height="400" 
+          viewBox="0 0 500 500" 
+          fill="none" 
+          xmlns="http://www.w3.org/2000/svg"
+          class="max-h-[700px] object-contain opacity-90">
+          <g id="Group">
+            <!-- Содержимое SVG -->
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div id="configPanel" class="bg-[#18191d] rounded-2xl border border-gray-800 p-5 self-start">
+      <h2 class="text-2xl mb-4 font-bold">Конфигурация</h2>
+      
+      <div class="mb-4">
+        <label class="block text-sm text-gray-400 mb-1.5">Название сборки *</label>
+        <input 
+          type="text" 
+          id="buildName" 
+          placeholder="Игровой монстр 2026" 
+          class="w-full bg-[#23242a] border border-gray-700 rounded-xl px-4 py-2 text-sm text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none transition"
+          maxlength="50">
+        <p id="buildNameError" class="text-red-400 text-xs mt-1 hidden">Введите название сборки</p>
+      </div>
+      
+      <div class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm border-b border-gray-800 pb-4">
+        <div class="flex flex-col">
+          <span class="text-gray-400 text-xs uppercase tracking-wider mb-0.5">CPU</span>
+          <span id="summaryCpu" class="truncate font-semibold text-base">-</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-gray-400 text-xs uppercase tracking-wider mb-0.5">GPU</span>
+          <span id="summaryGpu" class="truncate font-semibold text-base">-</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-gray-400 text-xs uppercase tracking-wider mb-0.5">RAM</span>
+          <span id="summaryRam" class="truncate font-semibold text-base">-</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-gray-400 text-xs uppercase tracking-wider mb-0.5">Мат. плата</span>
+          <span id="summaryMotherboard" class="truncate font-semibold text-base">-</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-gray-400 text-xs uppercase tracking-wider mb-0.5">Охлаждение</span>
+          <span id="summaryCooler" class="truncate font-semibold text-base">-</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-gray-400 text-xs uppercase tracking-wider mb-0.5">Накопитель</span>
+          <span id="summaryStorage" class="truncate font-semibold text-base">-</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-gray-400 text-xs uppercase tracking-wider mb-0.5">Блок питания</span>
+          <span id="summaryPsu" class="truncate font-semibold text-base">-</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-gray-400 text-xs uppercase tracking-wider mb-0.5">Корпус</span>
+          <span id="summaryCase" class="truncate font-semibold text-base">-</span>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center my-4">
+        <span class="text-lg font-bold">Итого</span>
+        <span id="totalPrice" class="text-2xl text-purple-400 font-bold">0 ₽</span>
+      </div>
+
+      <button onclick="addToCart()" class="w-full bg-purple-600 hover:bg-purple-700 transition-all duration-300 py-3 rounded-xl text-base font-bold">
+        Добавить в корзину
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ПОДКЛЮЧАЕМ СКРИПТЫ В ПРАВИЛЬНОМ ПОРЯДКЕ -->
+<script src="/scripts/supabase.js"></script>
+<script src="/scripts/configurator.js"></script>
+
+<!-- ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА -->
+<script>
+  // Проверяем, что клиент инициализирован
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.supabaseClient !== 'undefined') {
+      console.log('✅ Supabase клиент доступен глобально');
+    } else {
+      console.error('❌ Supabase клиент НЕ НАЙДЕН!');
+    }
+  });
+</script>
+</body>
+</html>

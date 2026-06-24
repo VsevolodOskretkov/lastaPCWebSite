@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+  <meta charset="UTF-8">
+
+  <title>Корзина</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
+
+
+
+   <style>
+    @font-face {
+      font-family: 'Tektur Regular';
+      src: url('/src/Fonts/Tektur-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    @font-face {
+      font-family: 'Tektur Bold';
+      src: url('/src/Fonts/Tektur-Bold.ttf') format('truetype');
+      font-weight: bold;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    /* Применение шрифтов */
+    body {
+      font-family: 'Tektur Regular', monospace, sans-serif;
+    }
+    
+    h1, h2, h3, h4, .font-bold, button, nav a, .tracking-widest {
+      font-family: 'Tektur Bold', monospace, sans-serif;
+    }
+    
+    /* Для заголовков в карточках */
+    .text-xl, .text-5xl, .text-2xl, .text-lg {
+      font-family: 'Tektur Bold', monospace, sans-serif;
+    }
+    @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+  </style>
+</head>
+
+<body class="bg-gray-900 text-white font-sans ">
+
+<!-- HEADER -->
+<header class="flex items-center justify-between px-12 py-1 border-b border-gray-800">
+  <a href="/" class="text-xl font-bold tracking-widest">LASTA.PC</a>
+
+  <nav class="hidden md:flex gap-8 text-sm text-gray-300">
+    <a href="/catalog" class="hover:text-white">Готовые решения</a>
+    <a href="/configuration" class="hover:text-white">Конструктор</a>
+    <a href="/faq" class="hover:text-white">Вопросы</a>
+  </nav>
+
+<div class="flex gap-4">
+<span class="cursor-pointer hover:text-purple-500 transition" onclick="window.location.href='/profile'">
+  <img src="/src/img/svg/user.svg" alt="Профиль" class="w-11 h-11">
+</span>
+<a href="/cart" class="cursor-pointer hover:text-purple-500 transition block"> 
+    <img src="/src/img/svg/shopping-cart.svg" alt="Корзина" class="w-11 h-11"> 
+</a>
+
+  
+</div>
+</header>
+
+  
+<div class="max-w-7xl mx-auto px-8 py-20">
+
+  <h1 class="text-5xl mb-12">
+    Корзина
+  </h1>
+
+  <div
+    id="cartContainer"
+    class="space-y-6"
+  >
+  </div>
+</div>
+  <script src="/scripts/supabase.js"></script>
+
+  <script src="/scripts/cart.js"></script>
+</body>
+</html>

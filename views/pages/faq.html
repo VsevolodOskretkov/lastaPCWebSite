@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>FAQ | LASTA.PC</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+
+  <style>
+    @font-face {
+      font-family: 'Tektur Regular';
+      src: url('/src/Fonts/Tektur-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    @font-face {
+      font-family: 'Tektur Bold';
+      src: url('/src/Fonts/Tektur-Bold.ttf') format('truetype');
+      font-weight: bold;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    body {
+      font-family: 'Tektur Regular', monospace, sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    
+    h1, h2, h3, h4, .font-bold, button, nav a, .tracking-widest {
+      font-family: 'Tektur Bold', monospace, sans-serif;
+    }
+    
+    .text-xl, .text-5xl, .text-2xl, .text-lg {
+      font-family: 'Tektur Bold', monospace, sans-serif;
+    }
+
+    @layer base {
+      html {
+        scroll-behavior: smooth;
+      }
+    }
+
+    /* Плавные анимации */
+    .category-content,
+    .question-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+    }
+
+    .category-content.open {
+      max-height: 1000px;
+      transition: max-height 0.5s ease-in;
+    }
+
+    .question-content.open {
+      max-height: 200px;
+      transition: max-height 0.3s ease-in;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-900 text-white font-sans">
+
+<!-- HEADER -->
+<header class="flex items-center justify-between px-12 py-1 border-b border-gray-800">
+  <a href="/" class="text-xl font-bold tracking-widest">LASTA.PC</a>
+
+  <nav class="hidden md:flex gap-8 text-sm text-gray-300">
+    <a href="/catalog" class="hover:text-white">Готовые решения</a>
+    <a href="/configuration" class="hover:text-white">Конструктор</a>
+    <a href="/faq" class="hover:text-white">Вопросы</a>
+  </nav>
+
+<div class="flex gap-4">
+<span class="cursor-pointer hover:text-purple-500 transition" onclick="window.location.href='/profile'">
+  <img src="/src/img/svg/user.svg" alt="Профиль" class="w-11 h-11">
+</span>
+<a href="/cart" class="cursor-pointer hover:text-purple-500 transition block"> 
+    <img src="/src/img/svg/shopping-cart.svg" alt="Корзина" class="w-11 h-11"> 
+</a>
+  
+</div>
+</header>
+
+<main class="flex-1">
+  <section class="max-w-4xl mx-auto px-6 py-16">
+    <h1 class="text-4xl text-center mb-12">Часто задаваемые вопросы</h1>
+    <!-- CATEGORY: GENERAL (ОБЩИЙ) -->
+<div class="mb-6 bg-[#1a1b1f] border border-gray-800 rounded-xl overflow-hidden">
+  <button class="w-full px-6 py-5 flex justify-between items-center category-btn hover:bg-gray-800/50 transition">
+    <span class="text-xl">Общий</span>
+    <span class="category-icon text-xl transition-transform duration-300">+</span>
+  </button>
+
+  <div class="category-content px-6">
+    <div class="space-y-4 pb-6">
+
+      <!-- QUESTION 1 -->
+      <div class="border border-gray-800 rounded-lg overflow-hidden">
+        <button class="w-full px-4 py-3 flex justify-between items-center question-btn hover:bg-gray-800/50 transition">
+          <span>Можно ли купить компьютер без оперативной памяти или накопителя?</span>
+          <span class="question-icon text-lg transition-transform duration-300">+</span>
+        </button>
+        <div class="question-content px-4">
+          <div class="pb-4 text-gray-400">
+            Нет, мы продаём только полностью укомплектованные системы. Все основные компоненты должны быть приобретены, так как все системы должны быть полностью работоспособны перед отправкой. Однако мы предлагаем гарантию на вскрытие корпуса, которая позволяет вам самостоятельно устанавливать свои компоненты. Для получения дополнительной информации ознакомьтесь с нашими условиями.
+          </div>
+        </div>
+      </div>
+
+      <!-- QUESTION 2 -->
+      <div class="border border-gray-800 rounded-lg overflow-hidden">
+        <button class="w-full px-4 py-3 flex justify-between items-center question-btn hover:bg-gray-800/50 transition">
+          <span>Можно ли купить отдельные компоненты?</span>
+          <span class="question-icon text-lg transition-transform duration-300">+</span>
+        </button>
+        <div class="question-content px-4">
+          <div class="pb-4 text-gray-400">
+            Нет, мы продаём только полностью собранные системы. Однако если вы уже приобрели у нас систему, мы предлагаем апгрейд на большинство компонентов.
+          </div>
+        </div>
+      </div>
+
+      <!-- QUESTION 3 -->
+      <div class="border border-gray-800 rounded-lg overflow-hidden">
+        <button class="w-full px-4 py-3 flex justify-between items-center question-btn hover:bg-gray-800/50 transition">
+          <span>Могу ли я сдать свою старую систему в трейд-ин?</span>
+          <span class="question-icon text-lg transition-transform duration-300">+</span>
+        </button>
+        <div class="question-content px-4">
+          <div class="pb-4 text-gray-400">
+            Да, вы можете сдать свою старую систему по программе Трейд-Ин.
+          </div>
+        </div>
+      </div>
+
+      <!-- QUESTION 4 -->
+      <div class="border border-gray-800 rounded-lg overflow-hidden">
+        <button class="w-full px-4 py-3 flex justify-between items-center question-btn hover:bg-gray-800/50 transition">
+          <span>Где вы находитесь?</span>
+          <span class="question-icon text-lg transition-transform duration-300">+</span>
+        </button>
+        <div class="question-content px-4">
+          <div class="pb-4 text-gray-400">
+            Мы находимся в Санкт-Петербурге, ул. Коллонтай 21д1. Вы можете забрать заказы самостоятельно с нашего склада, но мы не рекомендуем посещать наш офис, так как он не оборудован для приёма посетителей.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+    <!-- CATEGORY: PAYMENT -->
+    <div class="mb-6 bg-[#1a1b1f] border border-gray-800 rounded-xl overflow-hidden">
+      <button class="w-full px-6 py-5 flex justify-between items-center category-btn hover:bg-gray-800/50 transition">
+        <span class="text-xl">Оплата</span>
+        <span class="category-icon text-xl transition-transform duration-300">+</span>
+      </button>
+
+      <div class="category-content px-6">
+        <div class="space-y-4 pb-6">
+          <div class="border border-gray-800 rounded-lg overflow-hidden">
+            <button class="w-full px-4 py-3 flex justify-between items-center question-btn hover:bg-gray-800/50 transition">
+              <span>Какие способы оплаты доступны?</span>
+              <span class="question-icon text-lg transition-transform duration-300">+</span>
+            </button>
+            <div class="question-content px-4">
+              <div class="pb-4 text-gray-400">
+                Карты Visa / Mastercard, СБП, рассрочка и криптовалюта.
+              </div>
+            </div>
+          </div>
+
+          <div class="border border-gray-800 rounded-lg overflow-hidden">
+            <button class="w-full px-4 py-3 flex justify-between items-center question-btn hover:bg-gray-800/50 transition">
+              <span>Можно ли оплатить частями?</span>
+              <span class="question-icon text-lg transition-transform duration-300">+</span>
+            </button>
+            <div class="question-content px-4">
+              <div class="pb-4 text-gray-400">
+                Да, рассрочка предоставляется Т-банком, на срок от 3 до 36 месяцев, условия уточняйте у менеджера.
+              </div>
+            </div>
+          </div>
+
+                    <div class="border border-gray-800 rounded-lg overflow-hidden">
+            <button class="w-full px-4 py-3 flex justify-between items-center question-btn hover:bg-gray-800/50 transition">
+              <span>Можно ли оплатить ПК при получении?</span>
+              <span class="question-icon text-lg transition-transform duration-300">+</span>
+            </button>
+            <div class="question-content px-4">
+              <div class="pb-4 text-gray-400">
+                Мы работаем по предоплате, для того чтобы запустить ваш заказ в производство, необходимо оплатить 50% стоимости заказа, остальную часть можно будет внести перед отправкой, когда вам вышлют все видео с вашим ПК
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORY: DELIVERY -->
+    <div class="mb-6 bg-[#1a1b1f] border border-gray-800 rounded-xl overflow-hidden">
+      <button class="w-full px-6 py-5 flex justify-between items-center category-btn hover:bg-gray-800/50 transition">
+        <span class="text-xl">Доставка</span>
+        <span class="category-icon text-xl transition-transform duration-300">+</span>
+      </button>
+
+      <div class="category-content px-6">
+        <div class="space-y-4 pb-6">
+          <div class="border border-gray-800 rounded-lg overflow-hidden">
+            <button class="w-full px-4 py-3 flex justify-between items-center question-btn hover:bg-gray-800/50 transition">
+              <span>Сколько идёт доставка?</span>
+              <span class="question-icon text-lg transition-transform duration-300">+</span>
+            </button>
+            <div class="question-content px-4">
+              <div class="pb-4 text-gray-400">
+                Обычно 3–7 дней по России.
+              </div>
+            </div>
+          </div>
+                    <div class="border border-gray-800 rounded-lg overflow-hidden">
+            <button class="w-full px-4 py-3 flex justify-between items-center question-btn hover:bg-gray-800/50 transition">
+              <span>Сколько стоит доставка?</span>
+              <span class="question-icon text-lg transition-transform duration-300">+</span>
+            </button>
+            <div class="question-content px-4">
+              <div class="pb-4 text-gray-400">
+                Стоимость зависит от региона и будет рассчитана на этапе оформления заказа.
+              </div>
+            </div>
+          </div>
+
+          <div class="border border-gray-800 rounded-lg overflow-hidden">
+            <button class="w-full px-4 py-3 flex justify-between items-center question-btn hover:bg-gray-800/50 transition">
+              <span>Вы отправляете в регионы?</span>
+              <span class="question-icon text-lg transition-transform duration-300">+</span>
+            </button>
+            <div class="question-content px-4">
+              <div class="pb-4 text-gray-400">
+                Мы осуществляем доставку по всей территории России через транспортную компанию "СДЭК". Каждый заказ страхуется на полную стоимость и надёжно упаковывается в обрешётку для безопасной транспортировки.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORY: WARRANTY -->
+    <div class="mb-6 bg-[#1a1b1f] border border-gray-800 rounded-xl overflow-hidden">
+      <button class="w-full px-6 py-5 flex justify-between items-center category-btn hover:bg-gray-800/50 transition">
+        <span class="text-xl">Гарантия</span>
+        <span class="category-icon text-xl transition-transform duration-300">+</span>
+      </button>
+
+
+
+      <div class="category-content px-6">
+        <div class="space-y-4 pb-6">
+          <div class="border border-gray-800 rounded-lg overflow-hidden">
+            <button class="w-full px-4 py-3 flex justify-between items-center question-btn hover:bg-gray-800/50 transition">
+              <span>Есть ли гарантия?</span>
+              <span class="question-icon text-lg transition-transform duration-300">+</span>
+            </button>
+            <div class="question-content px-4">
+              <div class="pb-4 text-gray-400">
+                Гарантия до 24 месяцев на комплектующие и сборку.
+              </div>
+            </div>
+          </div>
+
+                <div class="border border-gray-800 rounded-lg overflow-hidden">
+        <button class="w-full px-4 py-3 flex justify-between items-center question-btn hover:bg-gray-800/50 transition">
+          <span>Будет ли у меня поддержка?</span>
+          <span class="question-icon text-lg transition-transform duration-300">+</span>
+        </button>
+        <div class="question-content px-4">
+          <div class="pb-4 text-gray-400">
+            Да, гарантийный специалист будет на связи весь срок эксплуатации вашего ПК.
+          </div>
+        </div>
+      </div>
+        </div>
+      </div>
+      
+
+
+
+
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-black/40 text-gray-400 text-sm bg-gray-950">
+  <div class="max-w-[1400px] mx-auto px-6 py-10 flex flex-col md:flex-row justify-between gap-8">
+    <div class="space-y-2">
+      <div class="text-white tracking-widest text-[13px] mb-3">LASTA.PC</div>
+      <p>+7 (923) 428-44-54</p>
+      <p>lasta@gmail.com</p>
+      <p>г. Санкт-Петербург, ул. Коллонтай 21к1</p>
+    </div>
+
+    <div class="flex flex-col items-start md:items-end gap-4">
+      <div class="flex gap-4 text-lg">
+        <a href="https://vk.ru/oskretkov1" class="hover:opacity-80 transition"><img src="/src/img/svg/vk.svg" alt="VK" class="w-6 h-6"></a>
+        <a href="https://t.me/kain3131" class="hover:opacity-80 transition"><img src="/src/img/svg/tg.svg" alt="TG" class="w-6 h-6"></a>
+      </div>
+      <div class="flex flex-col md:items-end gap-1 text-xs">
+        <a href="#" class="hover:text-white transition">Реквизиты</a>
+        <a href="#" class="hover:text-white transition">Политика конфиденциальности</a>
+        <a href="#" class="hover:text-white transition">Пользовательское соглашение</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+  <script src="/scripts/supabase.js"></script>
+<script>
+  // CATEGORY TOGGLE с плавной анимацией
+  document.querySelectorAll(".category-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const content = btn.nextElementSibling
+      const icon = btn.querySelector(".category-icon")
+      const isOpen = content.classList.contains("open")
+      
+      // Закрываем все категории
+      document.querySelectorAll(".category-content").forEach(c => {
+        if (c.classList.contains("open")) {
+          c.classList.remove("open")
+          const parentBtn = c.parentElement.querySelector(".category-btn")
+          const parentIcon = parentBtn?.querySelector(".category-icon")
+          if (parentIcon) parentIcon.style.transform = "rotate(0deg)"
+        }
+      })
+      
+      // Открываем текущую если она была закрыта
+      if (!isOpen) {
+        content.classList.add("open")
+        icon.style.transform = "rotate(45deg)"
+      } else {
+        icon.style.transform = "rotate(0deg)"
+      }
+    })
+  })
+
+  // QUESTION TOGGLE с плавной анимацией
+  document.querySelectorAll(".question-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation()
+      
+      const content = btn.nextElementSibling
+      const icon = btn.querySelector(".question-icon")
+      const isOpen = content.classList.contains("open")
+      
+      // Находим родительскую категорию
+      const parentCategory = btn.closest(".category-content")
+      
+      // Закрываем все вопросы в этой категории
+      if (parentCategory) {
+        parentCategory.querySelectorAll(".question-content").forEach(q => {
+          if (q.classList.contains("open")) {
+            q.classList.remove("open")
+            const parentBtn = q.parentElement.querySelector(".question-btn")
+            const parentIcon = parentBtn?.querySelector(".question-icon")
+            if (parentIcon) parentIcon.style.transform = "rotate(0deg)"
+          }
+        })
+      }
+      
+      // Открываем текущий вопрос если он был закрыт
+      if (!isOpen) {
+        content.classList.add("open")
+        icon.style.transform = "rotate(45deg)"
+      } else {
+        icon.style.transform = "rotate(0deg)"
+      }
+    })
+  })
+</script>
+
+</body>
+</html>

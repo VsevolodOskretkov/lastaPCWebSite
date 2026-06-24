@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>LASTA.PC</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
+
+  <!-- Подключение локальных шрифтов Tektur -->
+  <style>
+    @font-face {
+      font-family: 'Tektur Regular';
+      src: url('/src/Fonts/Tektur-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    @font-face {
+      font-family: 'Tektur Bold';
+      src: url('/src/Fonts/Tektur-Bold.ttf') format('truetype');
+      font-weight: bold;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    /* Применение шрифтов */
+    body {
+      font-family: 'Tektur Regular', monospace, sans-serif;
+    }
+    
+    h1, h2, h3, h4, .font-bold, button, nav a, .tracking-widest {
+      font-family: 'Tektur Bold', monospace, sans-serif;
+    }
+    
+    /* Для заголовков в карточках */
+    .text-xl, .text-5xl, .text-2xl, .text-lg {
+      font-family: 'Tektur Bold', monospace, sans-serif;
+    }
+    @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+  </style>
+</head>
+
+<body class="bg-gray-950 text-white font-sans">
+
+<!-- HEADER -->
+<header class="flex items-center justify-between px-12 py-1 border-b border-gray-800">
+  <a href="/" class="text-xl font-bold tracking-widest">LASTA.PC</a>
+
+  <nav class="hidden md:flex gap-8 text-sm text-gray-300">
+    <a href="/catalog" class="hover:text-white">Готовые решения</a>
+    <a href="/configuration" class="hover:text-white">Конструктор</a>
+    <a href="/faq" class="hover:text-white">Вопросы</a>
+  </nav>
+
+<div class="flex gap-4">
+<span class="cursor-pointer hover:text-purple-500 transition" onclick="window.location.href='/profile'">
+  <img src="/src/img/svg/user.svg" alt="Профиль" class="w-11 h-11">
+</span>
+<a href="/cart" class="cursor-pointer hover:text-purple-500 transition block"> 
+    <img src="/src/img/svg/shopping-cart.svg" alt="Корзина" class="w-11 h-11"> 
+</a>
+
+  
+</div>
+</header>
+
+<!-- HERO -->
+<section class="relative overflow-hidden">
+  <img src="/src/img/mainView/firstMainImg.webp"
+       class="absolute w-full h-full object-cover opacity-30">
+
+  <div class="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent"></div>
+
+  <div class="relative max-w-7xl mx-auto px-8 py-64 grid md:grid-cols-2 gap-12 items-center">
+
+    <div class="pl-7 md:pl-16 pr-4 md:pr-8">
+      <h1 class="text-5xl font-bold mb-6 leading-tight">
+        Игровые ПК<br>
+        <span class="text-purple-500">под ключ</span>
+      </h1>
+
+      <p class="text-gray-300 mb-8 text-lg">
+        Мощные компьютеры для игр и работы. <br> Выбери конфигурацию под свои задачи.
+      </p>
+<a href="/index#model" 
+   class="inline-block border border-purple-500 text-purple-400 px-8 py-3 rounded-lg text-xs hover:bg-purple-500 hover:text-white transition-all duration-3000 text-center">
+  Подробнее
+</a>
+    </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- MODELS -->
+<section class="max-w-7xl mx-auto px-8 py-20" id="model">
+  <h2 class="text-center text-2xl mb-12 tracking-widest text-gray-300">
+    Модельный ряд
+  </h2>
+
+  <div class="grid md:grid-cols-3 gap-8">
+
+    <!-- CARD -->
+    <div class="bg-gray-900 p-12 rounded-xl border border-gray-800 hover:border-purple-500 transition">
+      <img src="/src/img/Pc/pc1.webp" class="mb-8 rounded w-full h-74 object-cover">
+      <h3 class="text-lg text-center text-gray-300 ">Серебро</h3>
+      <p class="text-gray-400 text-center mb-12">от 30 000₽</p>
+      <button onclick="window.location.href='/catalog#silver'" class="border border-purple-500 w-full text-purple-400 px-6 py-2 rounded-lg text-sm mb-6 hover:bg-purple-500 hover:text-white transition">Подробнее</button>
+    </div>
+
+    <div class="bg-gray-900 p-12 rounded-xl border border-gray-800 hover:border-purple-500 transition">
+      <img src="/src/img/Pc/pc5.webp" class="mb-8 rounded w-full h-74 object-cover">
+      <h3 class="text-lg text-center text-yellow-400">Золото</h3>
+      <p class="text-gray-400 text-center mb-12">от 80 000₽</p>
+        <a href="/catalog#gold" 
+     class="block border border-purple-500 w-full text-purple-400 px-6 py-2 rounded-lg text-sm hover:bg-purple-500 hover:text-white transition text-center">
+    Подробнее
+  </a>
+    </div>
+
+    <div class="bg-gray-900 p-12 rounded-xl border border-gray-800 hover:border-purple-500 transition">
+      <img src="/src/img/Pc/pc9.webp" class="mb-8 rounded w-full h-74 object-cover">
+      <h3 class="text-lg text-center text-purple-400">Платина</h3>
+      <p class="text-gray-400 text-center mb-12">от 180 000₽</p>
+      <button onclick="window.location.href='/catalog#platina'" class="border border-purple-500 w-full text-purple-400 px-6 py-2 rounded-lg text-sm mb-6 hover:bg-purple-500 hover:text-white transition">Подробнее</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- STEPS -->
+<section class="bg-gray-900 py-20">
+  <div class="max-w-7xl mx-auto px-8">
+
+    <h2 class="text-center text-2xl mb-12 tracking-widest text-gray-300">
+      Этапы заказа
+    </h2>
+
+<div class="grid md:grid-cols-4 gap-6">
+
+  <!-- Консультация -->
+  <div class="bg-gray-800 p-6 rounded-xl text-center hover:border-purple-500 transition border border-gray-700">
+    <div class="flex justify-center mb-4">
+      <img src="/src/img/svg/support.svg" alt="Консультация" class="w-12 h-12">
+    </div>
+    <h4 class="mb-2 text-lg font-bold">Техподдержка 24/7</h4>
+    <p class="text-gray-400 text-sm">Круглосуточная помощь</p>
+    <p class="text-gray-400 text-sm">Наши специалисты всегда на связи — звоните в любое время дня и ночи, мы оперативно решим любой вопрос.</p>
+  </div>
+
+  <!-- Оплата -->
+  <div class="bg-gray-800 p-6 rounded-xl text-center hover:border-purple-500 transition border border-gray-700">
+    <div class="flex justify-center mb-4">
+      <img src="/src/img/svg/creditCard.svg" alt="Оплата" class="w-12 h-12">
+    </div>
+    <h4 class="mb-2 text-lg font-bold">Оплата</h4>
+    <p class="text-gray-400 text-sm">Удобные способы оплаты</p>
+    <p class="text-gray-400 text-sm">Мы предлагаем гибкие варианты оплаты — от полной предоплаты до удобной рассрочки или кредита.</p>
+  </div>
+
+  <!-- Подготовка -->
+  <div class="bg-gray-800 p-6 rounded-xl text-center hover:border-purple-500 transition border border-gray-700">
+    <div class="flex justify-center mb-4">
+      <img src="/src/img/svg/cpu.svg" alt="Подготовка" class="w-12 h-12">
+    </div>
+    <h4 class="mb-2 text-lg font-bold">Подготовка</h4>
+    <p class="text-gray-400 text-sm">Сборка и тестирование</p>
+    <p class="text-gray-400 text-sm">Тестирование и настройка вашего пк перед отправкой. Устанавливаем ОС и проводим стресс-тесты. </p>
+  </div>
+
+  <!-- Доставка -->
+  <div class="bg-gray-800 p-6 rounded-xl text-center hover:border-purple-500 transition border border-gray-700">
+    <div class="flex justify-center mb-4">
+      <img src="/src/img/svg/Codesandbox.svg" alt="Доставка" class="w-12 h-12">
+    </div>
+    <h4 class="mb-2 text-lg font-bold">Доставка</h4>
+    <p class="text-gray-400 text-sm">Быстро и безопасно</p>
+    <p class="text-gray-400 text-sm">Безопасная и надежная доствавка вашего ПК прямо до двери  </p>
+  </div>
+
+</div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section class="max-w-7xl mx-auto px-8 py-20 grid md:grid-cols-2 gap-12 items-center">
+
+  <div>
+    <h2 class="text-2xl mb-6">Почему стоит выбрать нас?</h2>
+    <p class="text-gray-400 leading-relaxed text-xl">
+      Мы вкладываем душу в каждый компьютер. Используем только проверенные комплектующие,
+      тестируем каждую сборку и обеспечиваем поддержку после покупки.
+    </p>
+  </div>
+
+  <img src="/src/img/mainView/mainAboutUs.webp"
+       class="rounded-xl shadow-xl w-full h-64 object-cover">
+
+</section>
+
+<!-- CONTACT -->
+<section class="bg-gray-900 py-16">
+  <div class="max-w-7xl mx-auto px-8 grid md:grid-cols-2 gap-8">
+
+         <!-- Яндекс.Карта, встроенная через iframe -->
+
+<div style="position:relative;overflow:hidden;" class="rounded-xl w-full h-64 object-cover">
+  <a href="https://yandex.ru/maps/2/saint-petersburg/?utm_medium=mapframe&utm_source=maps" style="color:#eee;font-size:12px;position:absolute;top:0px;">Санкт‑Петербург</a>
+
+  <a href="https://yandex.ru/maps/2/saint-petersburg/house/ulitsa_kollontay_21k1/Z0kYcgFpSEEPQFtjfXVweXtlYQ==/?ll=30.469760%2C59.918961&utm_medium=mapframe&utm_source=maps&z=19.11" style="color:#eee;font-size:12px;position:absolute;top:14px;">Улица Коллонтай, 21к1 — Яндекс Карты</a>
+ 
+  <iframe src="https://yandex.ru/map-widget/v1/?ll=30.469760%2C59.918961&mode=whatshere&whatshere%5Bpoint%5D=30.468692%2C59.918596&whatshere%5Bzoom%5D=17&z=17.5" width="700" height="350" frameborder="1" allowfullscreen="true" style="position:relative;">
+  
+  </iframe>
+</div>
+
+    <div>
+      <h3 class="text-xl mb-4">г. Санкт-Петербург, ул. Коллонтай, 21к1, 8 подъезд, 1 этаж</h3>
+      <p class="text-x1-400">Метро</p>
+      <p class="text-gray-400 mb-4">Проспект Большевиков</p>
+      <p class="text-x1-400 ">Режим работы</p>
+      <p class="text-gray-400 mb-4">ПН - ВС: 10:00 - 20:00</p>
+      <p class="text-x1-400">+7 900 000-00-00</p>
+      <p class="text-x1-400">+7 999 999-99-99</p>
+    </div>
+
+  </div>
+</section>
+
+<footer class="border-t border-black/40 text-gray-400 text-sm">
+
+  <div class="max-w-[1400px] mx-auto px-6 py-10 flex flex-col md:flex-row justify-between gap-8">
+
+    <!-- LEFT -->
+    <div class="space-y-2">
+      <div class="text-white tracking-widest text-[13px] mb-3">
+        LASTA.PC
+      </div>
+
+      <p>+7 (923) 428-44-54</p>
+      <p>lasta@gmail.com</p>
+      <p>г. Санкт-Петербург, ул. Коллонтай 21к1</p>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="flex flex-col items-start md:items-end gap-4">
+
+      <!-- SOCIALS -->
+      <div class="flex gap-4 text-lg">
+        <a href="https://vk.ru/oskretkov1" class="hover:opacity-80 transition"><img src="/src/img/svg/vk.svg" alt="VK" class="w-6 h-6"></a>
+        <a href="https://t.me/kain3131" class="hover:opacity-80 transition"><img src="/src/img/svg/tg.svg" alt="VK" class="w-6 h-6"></a>
+      </div>
+
+      <!-- LINKS -->
+      <div class="flex flex-col md:items-end gap-1 text-xs">
+        <a href="#" class="hover:text-white transition">
+          Реквизиты
+        </a>
+        <a href="#" class="hover:text-white transition">
+          Политика конфиденциальности
+        </a>
+        <a href="#" class="hover:text-white transition">
+          Пользовательское соглашение
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+</footer>
+  <script src="/scripts/supabase.js"></script>
+
+
+<script>
+supabaseClient.auth.getSession().then(({ data }) => {
+
+  if (!data.session) {
+
+    console.log("Пользователь не авторизован")
+
+  } else {
+
+    console.log("Пользователь:", data.session.user)
+  }
+})
+
+</script>
+
+
+</body>
+</html>

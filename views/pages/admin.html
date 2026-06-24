@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Админ панель</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
+</head>
+
+<body class="bg-black text-white p-10">
+
+<h1 class="text-3xl mb-8">Админ панель</h1>
+
+<form id="createComputerForm" class="space-y-4 max-w-xl">
+
+  <input id="title"
+         placeholder="Название"
+         class="w-full p-3 bg-gray-900 rounded"
+         required>
+
+  <input id="slug"
+         placeholder="Slug (например: sputnik)"
+         class="w-full p-3 bg-gray-900 rounded">
+  <p class="text-gray-500 text-xs -mt-2">Уникальный идентификатор для URL</p>
+
+  <select id="category"
+          class="w-full p-3 bg-gray-900 rounded"
+          required>
+    <option value="silver">Silver</option>
+    <option value="gold">Gold</option>
+    <option value="platina">Platina</option>
+  </select>
+
+  <textarea id="description"
+            placeholder="Описание"
+            class="w-full bg-gray-900 p-3 rounded"
+            rows="4"></textarea>
+
+  <input id="short_description"
+         placeholder="Краткое описание"
+         class="w-full p-3 bg-gray-900 rounded">
+
+  <input id="price"
+         type="number"
+         placeholder="Цена"
+         class="w-full p-3 bg-gray-900 rounded"
+         required>
+
+  <input id="cpu"
+         placeholder="Процессор"
+         class="w-full p-3 bg-gray-900 rounded"
+         required>
+
+  <input id="gpu"
+         placeholder="Видеокарта"
+         class="w-full p-3 bg-gray-900 rounded"
+         required>
+
+  <input id="ram"
+         placeholder="Оперативная память"
+         class="w-full p-3 bg-gray-900 rounded"
+         required>
+
+  <input id="storage"
+         placeholder="SSD/HDD"
+         class="w-full p-3 bg-gray-900 rounded"
+         required>
+
+  <input id="image"
+         placeholder="Ссылка на изображение"
+         class="w-full p-3 bg-gray-900 rounded"
+         required>
+
+  <input id="windows"
+         placeholder="Версия Windows"
+         class="w-full p-3 bg-gray-900 rounded"
+         value="Windows 11">
+
+  <textarea id="features"
+            placeholder="Преимущества (каждое с новой строки)"
+            class="w-full bg-gray-900 p-3 rounded"
+            rows="4"></textarea>
+  <p class="text-gray-500 text-xs -mt-2">Каждое преимущество пишите с новой строки</p>
+
+  <textarea id="fps"
+            placeholder="FPS в играх (формат: CS2: 200 FPS, Valorant: 300 FPS)"
+            class="w-full bg-gray-900 p-3 rounded"
+            rows="3"></textarea>
+  <p class="text-gray-500 text-xs -mt-2">Пример: CS2: 200 FPS, Valorant: 300 FPS, Dota 2: 150 FPS</p>
+
+  <div class="flex items-center gap-4">
+    <input type="checkbox" id="published" class="w-5 h-5">
+    <label for="published" class="text-gray-300">Опубликовано</label>
+  </div>
+
+
+  <button class="bg-purple-600 px-6 py-3 rounded hover:bg-purple-700 transition">
+    Создать ПК
+  </button>
+
+</form>
+
+<div class="mt-20">
+
+  <h2 class="text-2xl mb-8">
+    Список компьютеров
+  </h2>
+  
+  <div id="computersList" class="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+  </div>
+
+</div>
+
+<script src="/scripts/supabase.js"></script>
+<script src="/scripts/admin.js"></script>
+
+</body>
+</html>

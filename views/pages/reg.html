@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Авторизация | LASTA.PC</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
+  <style>
+    @font-face {
+      font-family: 'Tektur Regular';
+      src: url('/src/Fonts/Tektur-Regular.ttf') format('truetype');
+    }
+
+    @font-face {
+      font-family: 'Tektur Bold';
+      src: url('/src/Fonts/Tektur-Bold.ttf') format('truetype');
+      font-weight: bold;
+    }
+
+    body {
+      font-family: 'Tektur Regular', monospace, sans-serif;
+    }
+
+    h1, h2, h3, h4, .font-bold, button, nav a, .tracking-widest {
+      font-family: 'Tektur Bold', monospace, sans-serif;
+    }
+  </style>
+</head>
+
+<body class="bg-[#0f0f10] text-white flex items-center justify-center min-h-screen">
+
+<div class="w-full max-w-md bg-[#1a1b1f] rounded-2xl p-8 border border-black/40">
+
+  <div class="text-center mb-8">
+    <div class="text-sm tracking-widest text-gray-400 mb-2">LASTA.PC</div>
+    <h1 class="text-xl">Личный кабинет</h1>
+  </div>
+
+  <!-- TABS -->
+  <div class="flex mb-6 bg-[#23242a] rounded-lg p-1 text-sm">
+    <button type="button" id="loginTab" class="w-1/2 py-2 rounded-md bg-purple-600">
+      Вход
+    </button>
+    <button type="button" id="registerTab" class="w-1/2 py-2 rounded-md text-gray-400">
+      Регистрация
+    </button>
+  </div>
+
+  <!-- LOGIN -->
+  <form id="loginForm" class="space-y-4">
+    <input id="loginEmail" type="email" placeholder="Email" class="w-full bg-[#23242a] p-3 rounded-lg" required>
+    <input id="loginPassword" type="password" placeholder="Пароль" class="w-full bg-[#23242a] p-3 rounded-lg" required>
+    <button class="w-full bg-purple-600 py-3 rounded-lg">Войти</button>
+  </form>
+
+  <!-- REGISTER -->
+  <form id="registerForm" class="space-y-4 hidden">
+    <input id="regName" type="text" placeholder="Имя" class="w-full bg-[#23242a] p-3 rounded-lg" required>
+    <input id="regEmail" type="email" placeholder="Email" class="w-full bg-[#23242a] p-3 rounded-lg" required>
+    <input id="regPassword" type="password" placeholder="Пароль" class="w-full bg-[#23242a] p-3 rounded-lg" required>
+    <input id="regPassword2" type="password" placeholder="Повторите пароль" class="w-full bg-[#23242a] p-3 rounded-lg" required>
+    <button class="w-full bg-purple-600 py-3 rounded-lg">Зарегистрироваться</button>
+  </form>
+
+</div>
+<script src="/scripts/supabase.js"></script>
+
+<script>
+
+  // Переключение между формами
+  const loginTab = document.getElementById('loginTab')
+  const registerTab = document.getElementById('registerTab')
+  const loginForm = document.getElementById('loginForm')
+  const registerForm = document.getElementById('registerForm')
+
+  loginTab.addEventListener('click', () => {
+    loginTab.classList.add('bg-purple-600')
+    loginTab.classList.remove('text-gray-400')
+    registerTab.classList.remove('bg-purple-600')
+    registerTab.classList.add('text-gray-400')
+    loginForm.classList.remove('hidden')
+    registerForm.classList.add('hidden')
+  })
+
+  registerTab.addEventListener('click', () => {
+    registerTab.classList.add('bg-purple-600')
+    registerTab.classList.remove('text-gray-400')
+    loginTab.classList.remove('bg-purple-600')
+    loginTab.classList.add('text-gray-400')
+    registerForm.classList.remove('hidden')
+    loginForm.classList.add('hidden')
+  })
+
+  // РЕГИСТРАЦИЯ
+  document.getElementById("registerForm").addEventListener("submit", async (e) => {
+    e.preventDefault()
+
+    const name = document.getElementById("regName").value
+    const email = document.getElementById("regEmail").value
+    const password = document.getElementById("regPassword").value
+    const password2 = document.getElementById("regPassword2").value
+
+    // Проверка совпадения паролей
+    if (password !== password2) {
+      alert("Пароли не совпадают!")
+      return
+    }
+
+    if (password.length < 6) {
+      alert("Пароль должен быть не менее 6 символов!")
+      return
+    }
+
+    const { data, error } = await supabaseClient.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          name: name
+        }
+      }
+    })
+
+    if (error) {
+      alert("Ошибка: " + error.message)
+    } else {
+      alert("Проверьте почту для подтверждения регистрации!")
+      console.log(data)
+    }
+  })
+
+  // ЛОГИН
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault()
+
+    const email = document.getElementById("loginEmail").value
+    const password = document.getElementById("loginPassword").value
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    })
+
+    if (error) {
+      alert("Ошибка: " + error.message)
+    } else {
+      alert("Успешный вход! Добро пожаловать, " + (data.user.user_metadata?.name || data.user.email))
+      window.location.href = "/index"
+    }
+  })
+</script>
+
+
+</body>
+</html>

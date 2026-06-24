@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LASTA.PC - Каталог</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
+  <!-- Подключение локальных шрифтов Tektur -->
+  <style>
+    @font-face {
+      font-family: 'Tektur Regular';
+      src: url('/src/Fonts/Tektur-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    @font-face {
+      font-family: 'Tektur Bold';
+      src: url('/src/Fonts/Tektur-Bold.ttf') format('truetype');
+      font-weight: bold;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    /* Применение шрифтов */
+    body {
+      font-family: 'Tektur Regular', monospace, sans-serif;
+    }
+    
+    h1, h2, h3, h4, .font-bold, button, nav a, .tracking-widest {
+      font-family: 'Tektur Bold', monospace, sans-serif;
+    }
+    
+    /* Для заголовков в карточках */
+    .text-xl, .text-5xl, .text-2xl, .text-lg {
+      font-family: 'Tektur Bold', monospace, sans-serif;
+    }
+  </style>
+<body class="bg-gray-950 text-white font-sans">
+
+<!-- HEADER -->
+<header class="flex items-center justify-between px-12 py-1 border-b border-gray-800">
+  <a href="/" class="text-xl font-bold tracking-widest">LASTA.PC</a>
+
+  <nav class="hidden md:flex gap-8 text-sm text-gray-300">
+    <a href="/catalog" class="hover:text-white">Готовые решения</a>
+    <a href="/configuration" class="hover:text-white">Конструктор</a>
+    <a href="/faq" class="hover:text-white">Вопросы</a>
+  </nav>
+
+<div class="flex gap-4">
+<span class="cursor-pointer hover:text-purple-500 transition" onclick="window.location.href='/profile'">
+  <img src="/src/img/svg/user.svg" alt="Профиль" class="w-11 h-11">
+</span>
+<a href="/cart" class="cursor-pointer hover:text-purple-500 transition block"> 
+    <img src="/src/img/svg/shopping-cart.svg" alt="Корзина" class="w-11 h-11"> 
+</a>
+
+  
+</div>
+</header>
+
+<section class="relative overflow-hidden">
+  <img src="/src/img/CatalogView/catalogMain.webp"
+       class="absolute w-full h-full object-cover opacity-40">
+
+  <div class="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent"></div>
+
+
+  <div class="relative max-w-7xl mx-auto px-8 py-64 grid md:grid-cols-2 gap-12 items-center">
+    <div class="pl-8 md:pl-16 pr-4 md:pr-8">
+      <h1 class="text-5xl font-bold leading-tight">
+        Каталог<br>
+        <span class="text-purple-500  block">игровых компьютеров</span>
+      </h1>
+      <p class="text-gray-300 mt-8 text-lg pl-1">
+        Подберите идеальный компьютер для ваших задач
+      </p>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="bg-[#111214] py-16  text-white" id="silver">
+
+  <div class="max-w-[1400px] mx-auto px-6">
+
+    <h2 class="text-center text-[28px] mb-8 font-light tracking-wide">
+      <span class="text-gray-300 font-semibold">Серебро.</span>
+      <span class="text-gray-400">Бюджетные игровые ПК.</span>
+    </h2>
+
+    <div id="silverContainer"
+         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    </div>
+
+  </div>
+</section>
+
+<section class="bg-[#111214] py-16 text-white" id="gold">
+
+  <div class="max-w-[1400px] mx-auto px-6">
+
+    <h2 class="text-center text-[28px] mb-8 font-light tracking-wide">
+      <span class="text-yellow-400 font-semibold">Золото.</span>
+      <span class="text-gray-400">Оптимальные игровые ПК.</span>
+    </h2>
+
+    <div id="goldContainer"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    </div>
+  </div>
+</section>
+
+<section class="bg-[#111214] py-16 text-white" id="platina">
+
+  <div class="max-w-[1400px] mx-auto px-6">
+
+    <h2 class="text-center text-[28px] mb-8 font-light tracking-wide">
+      <span class="text-purple-400 font-semibold">Платина.</span>
+      <span class="text-gray-400">Мощные игровые ПК.</span>
+    </h2>
+
+    <div id="platinaContainer"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<footer class="border-t border-black/40 text-gray-400 text-sm">
+
+  <div class="max-w-[1400px] mx-auto px-6 py-10 flex flex-col md:flex-row justify-between gap-8">
+
+    <!-- LEFT -->
+    <div class="space-y-2">
+      <div class="text-white tracking-widest text-[13px] mb-3">
+        LASTA.PC
+      </div>
+
+      <p>+7 (923) 428-44-54</p>
+      <p>lasta@gmail.com</p>
+      <p>г. Санкт-Петербург, ул. Коллонтай 21к1</p>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="flex flex-col items-start md:items-end gap-4">
+
+      <!-- SOCIALS -->
+      <div class="flex gap-4 text-lg">
+        <a href="https://vk.ru/oskretkov1" class="hover:opacity-80 transition"><img src="/src/img/svg/vk.svg" alt="VK" class="w-6 h-6"></a>
+        <a href="https://t.me/kain3131" class="hover:opacity-80 transition"><img src="/src/img/svg/tg.svg" alt="VK" class="w-6 h-6"></a>
+      </div>
+
+      <!-- LINKS -->
+      <div class="flex flex-col md:items-end gap-1 text-xs">
+        <a href="#" class="hover:text-white transition">
+          Реквизиты
+        </a>
+        <a href="#" class="hover:text-white transition">
+          Политика конфиденциальности
+        </a>
+        <a href="#" class="hover:text-white transition">
+          Пользовательское соглашение
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+</footer>
+
+<script src="/scripts/supabase.js"></script>
+<script src="/scripts/catalog.js"></script>
+<script src="/scripts/cart.js"></script>
+
+</body>
+</html>
