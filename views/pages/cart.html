@@ -52,25 +52,39 @@
 <body class="bg-gray-900 text-white font-sans ">
 
 <!-- HEADER -->
-<header class="flex items-center justify-between px-12 py-1 border-b border-gray-800">
-  <a href="/" class="text-xl font-bold tracking-widest">LASTA.PC</a>
+<header class="flex items-center justify-between px-4 md:px-12 py-3 border-b border-gray-800">
+  <a href="/" class="text-xl md:text-2xl font-bold tracking-widest">LASTA.PC</a>
 
   <nav class="hidden md:flex gap-8 text-sm text-gray-300">
-    <a href="/catalog" class="hover:text-white">Готовые решения</a>
-    <a href="/configuration" class="hover:text-white">Конструктор</a>
-    <a href="/faq" class="hover:text-white">Вопросы</a>
+    <a href="/catalog" class="hover:text-white transition">Готовые решения</a>
+    <a href="/configuration" class="hover:text-white transition">Конструктор</a>
+    <a href="/faq" class="hover:text-white transition">Вопросы</a>
   </nav>
 
-<div class="flex gap-4">
-<span class="cursor-pointer hover:text-purple-500 transition" onclick="window.location.href='/profile'">
-  <img src="/src/img/svg/user.svg" alt="Профиль" class="w-11 h-11">
-</span>
-<a href="/cart" class="cursor-pointer hover:text-purple-500 transition block"> 
-    <img src="/src/img/svg/shopping-cart.svg" alt="Корзина" class="w-11 h-11"> 
-</a>
+  <!-- Мобильное меню (бургер) -->
+  <button id="mobileMenuBtn" class="md:hidden text-gray-300 hover:text-white transition" aria-label="Меню">
+    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
 
-  
-</div>
+  <!-- Мобильное меню (выпадающее) -->
+  <div id="mobileMenu" class="hidden md:hidden absolute top-16 left-0 right-0 bg-gray-900 border-b border-gray-800 z-50">
+    <div class="flex flex-col p-4 gap-4">
+      <a href="/catalog" class="text-gray-300 hover:text-white transition py-2 px-4 hover:bg-gray-800 rounded-lg">Готовые решения</a>
+      <a href="/configuration" class="text-gray-300 hover:text-white transition py-2 px-4 hover:bg-gray-800 rounded-lg">Конструктор</a>
+      <a href="/faq" class="text-gray-300 hover:text-white transition py-2 px-4 hover:bg-gray-800 rounded-lg">Вопросы</a>
+    </div>
+  </div>
+
+  <div class="flex gap-2 md:gap-4 items-center">
+    <span class="cursor-pointer hover:text-purple-500 transition" onclick="window.location.href='/profile'">
+      <img src="/src/img/svg/user.svg" alt="Профиль" class="w-9 h-9 md:w-11 md:h-11">
+    </span>
+    <a href="/cart" class="cursor-pointer hover:text-purple-500 transition block"> 
+      <img src="/src/img/svg/shopping-cart.svg" alt="Корзина" class="w-9 h-9 md:w-11 md:h-11"> 
+    </a>
+  </div>
 </header>
 
   

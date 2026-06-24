@@ -3,7 +3,7 @@
 // Кэш для корзины
 let cachedCart = null
 let cacheTime = 0
-const CACHE_DURATION = 30 * 1000
+
 
 // ========== ДОБАВЛЕНИЕ ГОТОВОГО ПК В КОРЗИНУ (для catalog.html) ==========
 window.addReadyPCToCart = async function(computerId) {
@@ -306,13 +306,17 @@ function createCustomBuildCard(item, build, components, itemTotal) {
   }).join('')
 
   div.innerHTML = `
-    <div class="flex flex-col lg:flex-row gap-8">
-      <div class="w-full lg:w-48 h-52 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center">
-        <div class="text-center">
-          <span class="text-5xl">🖥️</span>
-          <p class="text-white mt-2 font-medium">Кастомная сборка</p>
+<div class="flex flex-col lg:flex-row gap-8">
+    <div class="w-full lg:w-48 h-52 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center relative overflow-hidden">
+        <img 
+            src="/src/img/mainView/defoultPC.webp" 
+            alt="Кастомная сборка" 
+            class="w-full h-full object-cover"
+        >
+        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+            <p class="text-white font-medium text-center">Кастомная сборка</p>
         </div>
-      </div>
+    </div>
       
       <div class="flex-1">
         <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
