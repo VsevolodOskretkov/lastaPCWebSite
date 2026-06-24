@@ -46,25 +46,31 @@ function renderComponent(type, items, preserveSelection = false) {
         return;
     }
 
-    // Если нужно сохранить выбор, отмечаем выбранный компонент
     const selectedId = build[type]?.id;
 
     container.innerHTML = `
-        <button class="w-full bg-[#18191d] border border-gray-800 rounded-2xl p-4 text-left" 
+        <button class="w-full bg-[#18191d] border border-gray-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-left text-sm sm:text-base component-btn" 
                 onclick="toggleDropdown('${type}')">
-            ${getTitle(type)} ${build[type] ? '✅' : ''}
+            <span class="flex items-center justify-between">
+                <span>${getTitle(type)} ${build[type] ? '✅' : ''}</span>
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </span>
         </button>
         <div id="${type}Dropdown" class="component-dropdown hidden">
             ${items.map(item => `
-                <div class="p-4 hover:bg-gray-800 cursor-pointer ${selectedId === item.id ? 'bg-purple-900/20 border-l-4 border-purple-500' : ''}" 
+                <div class="p-3 sm:p-4 hover:bg-gray-800 cursor-pointer ${selectedId === item.id ? 'bg-purple-900/20 border-l-4 border-purple-500' : ''}" 
                      onclick="selectComponent('${type}', ${item.id})">
-                    <div>${item.title} ${selectedId === item.id ? '✓' : ''}</div>
-                    <div class="text-purple-400">
-                        ${item.price.toLocaleString()} ₽
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm sm:text-base">${item.title} ${selectedId === item.id ? '✓' : ''}</span>
+                        <span class="text-purple-400 text-sm sm:text-base font-medium">
+                            ${item.price.toLocaleString()} ₽
+                        </span>
                     </div>
-                    ${item.socket ? `<div class="text-gray-500 text-sm">Сокет: ${item.socket}</div>` : ''}
-                    ${item.ram_type ? `<div class="text-gray-500 text-sm">Тип RAM: ${item.ram_type}</div>` : ''}
-                    ${item.form_factor ? `<div class="text-gray-500 text-sm">Форм-фактор: ${item.form_factor}</div>` : ''}
+                    ${item.socket ? `<div class="text-gray-500 text-xs sm:text-sm mt-1">Сокет: ${item.socket}</div>` : ''}
+                    ${item.ram_type ? `<div class="text-gray-500 text-xs sm:text-sm">Тип RAM: ${item.ram_type}</div>` : ''}
+                    ${item.form_factor ? `<div class="text-gray-500 text-xs sm:text-sm">Форм-фактор: ${item.form_factor}</div>` : ''}
                 </div>
             `).join("")}
         </div>

@@ -189,8 +189,8 @@ function renderLocalCart(localCart) {
     div.className = 'bg-[#1a1b1f] rounded-2xl sm:rounded-3xl p-4 sm:p-6 w-full mb-4 sm:mb-6'
     div.innerHTML = `
       <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
-<div class="w-full lg:w-48 h-40 sm:h-48 lg:h-52 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center relative overflow-hidden">
-<img src="/src/img/Pc/defoultPC.webp" class="w-full h-full object-cover">
+<div class="w-full lg:w-48 h-40 sm:h-48 lg:h-52 bg-gray-800 rounded-xl sm:rounded-2xl flex items-center justify-center relative overflow-hidden">
+  <img src="/src/img/Pc/defoultPC.webp" class="w-full h-full object-cover">
 </div>
         
         <div class="flex-1">
@@ -304,9 +304,9 @@ function createCustomBuildCard(item, build, components, itemTotal) {
 
   div.innerHTML = `
     <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
-      <div class="w-full lg:w-48 h-40 sm:h-48 lg:h-52 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center relative overflow-hidden">
-          <img src="/src/img/Pc/defoultPC.webp" class="w-full h-full object-cover">
-      </div>
+<div class="w-full lg:w-48 h-40 sm:h-48 lg:h-52 bg-gray-800 rounded-xl sm:rounded-2xl flex items-center justify-center relative overflow-hidden">
+  <img src="/src/img/Pc/defoultPC.webp" class="w-full h-full object-cover">
+</div>
       
       <div class="flex-1">
         <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 sm:gap-6">
