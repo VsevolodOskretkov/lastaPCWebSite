@@ -79,7 +79,7 @@ function renderComputersList(computers) {
   if (!computers || computers.length === 0) {
     container.innerHTML = `
       <div class="text-center py-12 text-gray-400 col-span-full">
-         Компьютеры не найдены<br>
+        Компьютеры не найдены<br>
         <button onclick="resetForm()" class="mt-4 text-purple-400 underline">Создать первый компьютер</button>
       </div>
     `
@@ -106,11 +106,11 @@ function renderComputersList(computers) {
         <div class="flex gap-2 mt-3">
           <button onclick="editComputer('${pc.id}')" 
                   class="flex-1 bg-purple-600 text-xs py-1.5 rounded-lg hover:bg-purple-700 transition">
-             Редакт.
+            Редакт.
           </button>
           <button onclick="deleteComputer('${pc.id}')" 
                   class="flex-1 bg-red-600/20 text-red-400 text-xs py-1.5 rounded-lg hover:bg-red-600 hover:text-white transition">
-             Удалить
+            Удалить
           </button>
         </div>
       </div>
@@ -269,7 +269,7 @@ document.getElementById("createComputerForm")?.addEventListener("submit", async 
 
   } catch (err) {
     console.error("Ошибка:", err)
-    alert(`Ошибка: ${err.message}`)
+    alert("Ошибка: " + err.message)
   } finally {
     if (submitBtn) {
       submitBtn.textContent = originalText || (editingId ? "Обновить компьютер" : "Создать компьютер")
@@ -320,7 +320,7 @@ window.editComputer = async function(id) {
 
   } catch (err) {
     console.error("Ошибка загрузки компьютера:", err)
-    alert(' Ошибка загрузки данных компьютера')
+    alert('Ошибка загрузки данных компьютера')
   }
 }
 
@@ -350,7 +350,7 @@ function showError() {
   if (container) {
     container.innerHTML = `
       <div class="text-center py-12 text-red-400 col-span-full">
-         Ошибка загрузки списка компьютеров<br>
+        Ошибка загрузки списка компьютеров<br>
         <button onclick="location.reload()" class="mt-4 text-purple-400 underline">Повторить</button>
       </div>
     `
@@ -361,7 +361,7 @@ function showError() {
 // УПРАВЛЕНИЕ ЗАКАЗАМИ
 // ============================================
 
-async function loadOrders() {
+async function loadOrders() { 
   if (isLoadingOrders) return
   isLoadingOrders = true
 
@@ -370,7 +370,6 @@ async function loadOrders() {
       .from('orders')
       .select(`
         id,
-        user_id,
         total_price,
         status,
         payment_method,
@@ -378,9 +377,27 @@ async function loadOrders() {
         delivery_address,
         phone,
         created_at,
+
         profiles (
           name,
           email
+        ),
+
+        order_items (
+          id,
+          quantity,
+          price,
+          computer_id,
+          custom_build_id,
+
+          computers (
+            title,
+            image
+          ),
+
+          custom_builds (
+            title
+          )
         )
       `)
       .order('created_at', { ascending: false })
@@ -459,22 +476,53 @@ function renderOrdersList(orders) {
               </span>
             </div>
             <div class="mt-2 text-sm text-gray-400">
-              <p>👤 ${order.profiles?.name || 'Пользователь'} (${order.profiles?.email || 'нет email'})</p>
-              <p>📍 ${order.delivery_address || 'Самовывоз'}</p>
-              ${order.phone ? `<p>📱 ${order.phone}</p>` : ''}
+              <p>${order.profiles?.name || 'Пользователь'} (${order.profiles?.email || 'нет email'})</p>
+              <p>${order.delivery_address || 'Самовывоз'}</p>
+              ${order.phone ? `<p>${order.phone}</p>` : ''}
             </div>
           </div>
           <div class="flex flex-col items-end gap-2">
             <p class="text-xl font-bold text-purple-400">${order.total_price.toLocaleString()} ₽</p>
-            <select onchange="updateOrderStatus('${order.id}', this.value)" 
-                    class="bg-gray-700 text-white text-sm px-3 py-1.5 rounded-lg border border-gray-600 focus:border-purple-500 outline-none">
-              <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Ожидает</option>
-              <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>В обработке</option>
-              <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Отправлен</option>
-              <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Доставлен</option>
-              <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Отменен</option>
-            </select>
+            <div class="flex gap-2">
+              <select onchange="updateOrderStatus('${order.id}', this.value)" 
+                      class="bg-gray-700 text-white text-sm px-3 py-1.5 rounded-lg border border-gray-600 focus:border-purple-500 outline-none">
+                <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Ожидает</option>
+                <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>В обработке</option>
+                <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Отправлен</option>
+                <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Доставлен</option>
+                <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Отменен</option>
+              </select>
+              <button onclick="deleteOrder('${order.id}')" 
+                      class="bg-red-600 px-3 py-1.5 rounded-lg text-sm hover:bg-red-700 transition">
+                Удалить
+              </button>
+            </div>
           </div>
+        </div>
+
+        <!-- Кнопка Подробнее -->
+        <div class="mt-3">
+          <button onclick="toggleOrderDetails('${order.id}')" 
+                  class="bg-purple-600 px-3 py-1 rounded-lg text-sm hover:bg-purple-700 transition">
+            Подробнее
+          </button>
+        </div>
+
+        <!-- Детали заказа (скрыты по умолчанию) -->
+        <div class="hidden mt-4 border-t border-gray-700 pt-4" id="details-${order.id}">
+          <h4 class="font-semibold mb-3">Товары заказа</h4>
+          ${order.order_items && order.order_items.length > 0 ? order.order_items.map(item => {
+            const title = item.computers?.title || item.custom_builds?.title || 'Товар';
+            return `
+              <div class="flex justify-between bg-gray-900 rounded-lg p-3 mb-2">
+                <div>
+                  <p>${escapeHtml(title)}</p>
+                  <p class="text-xs text-gray-400">${item.quantity} шт.</p>
+                </div>
+                <div>${item.price.toLocaleString()} ₽</div>
+              </div>
+            `;
+          }).join('') : '<p class="text-gray-400 text-sm">Товары не найдены</p>'}
         </div>
       </div>
     `
@@ -497,7 +545,6 @@ window.updateOrderStatus = async function(orderId, newStatus) {
 
     if (error) throw error
 
-    // Показываем уведомление
     const statusMap = {
       'pending': 'Ожидает',
       'processing': 'В обработке',
@@ -506,17 +553,47 @@ window.updateOrderStatus = async function(orderId, newStatus) {
       'cancelled': 'Отменен'
     }
     
-    alert(`Статус заказа обновлен на "${statusMap[newStatus]}"`)
+    alert('Статус заказа обновлен на "' + statusMap[newStatus] + '"')
     
-    // Перезагружаем заказы
     await loadOrders()
 
   } catch (err) {
     console.error('Ошибка обновления статуса:', err)
     alert('Ошибка обновления статуса: ' + err.message)
-    
-    // Перезагружаем заказы чтобы вернуть правильный статус в select
     await loadOrders()
+  }
+}
+
+// Показать/скрыть детали заказа
+window.toggleOrderDetails = function(orderId) {
+  const block = document.getElementById('details-' + orderId)
+  if (!block) return
+  block.classList.toggle('hidden')
+}
+
+// Удаление заказа
+window.deleteOrder = async function(orderId) {
+  if (!confirm('Удалить заказ?')) return
+
+  try {
+    await supabaseClient
+      .from('order_items')
+      .delete()
+      .eq('order_id', orderId)
+
+    const { error } = await supabaseClient
+      .from('orders')
+      .delete()
+      .eq('id', orderId)
+
+    if (error) throw error
+
+    alert('Заказ удален')
+    await loadOrders()
+
+  } catch (err) {
+    console.error(err)
+    alert(err.message)
   }
 }
 
