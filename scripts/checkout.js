@@ -1,4 +1,3 @@
-
 // DOM элементы
 const profileName = document.getElementById('profileName');
 const profileEmail = document.getElementById('profileEmail');
@@ -17,37 +16,27 @@ let currentUser = null;
 let cartItems = [];
 let selectedPayment = 'cash';
 
-// Функция создания клиента Supabase (для статического HTML)
-function createClient(url, key) {
-  if (typeof supabaseClient !== 'undefined') {
-    return supabaseClient;
-  }
-  
-  // Если используете глобальный объект Supabase из CDN
-  if (window.supabase) {
-    return window.supabase.createClient(url, key);
-  }
-  
-  // Fallback
-  console.warn('Supabase client not initialized');
-  return null;
+
+
+// Проверка инициализации
+if (!supabaseClient) {
+  console.error('Supabase не инициализирован!');
 }
 
-// Загрузка профиля пользователя
+// Загрузка профиля пользователя - ИСПРАВЛЕНО
 async function loadUserProfile() {
   try {
-    const { data: { session }, error } = await supabase.auth.getSession();
+    // Используем supabaseClient вместо supabase
+    const { data: { session }, error } = await supabaseClient.auth.getSession();
     
     if (error || !session) {
-      // Перенаправляем на страницу входа
       window.location.href = '/reg';
       return;
     }
     
     currentUser = session.user;
     
-    // Загружаем профиль из таблицы profiles
-    const { data: profile, error: profileError } = await supabase
+    const { data: profile, error: profileError } = await supabaseClient
       .from('profiles')
       .select('*')
       .eq('id', session.user.id)
@@ -55,13 +44,11 @@ async function loadUserProfile() {
     
     if (profileError) {
       console.error('Ошибка загрузки профиля:', profileError);
-      // Используем данные из auth
       if (profileName) profileName.textContent = session.user.user_metadata?.name || session.user.email || 'Без имени';
       if (profileEmail) profileEmail.textContent = session.user.email || '';
       return;
     }
     
-    // Отображаем профиль
     displayProfile(profile);
     
   } catch (err) {
@@ -75,16 +62,15 @@ function displayProfile(profile) {
   if (profileEmail) profileEmail.textContent = profile.email || '';
   if (profilePhone) profilePhone.textContent = profile.phone || 'Не указан';
   
-  // Если есть поле phone в профиле
   if (profile.phone && deliveryPhone) {
     deliveryPhone.value = profile.phone;
   }
 }
 
-// Загрузка корзины
+// Загрузка корзины - ИСПРАВЛЕНО
 async function loadCart() {
   try {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await supabaseClient.auth.getSession();
     
     if (!session) {
       cartItemsContainer.innerHTML = `
@@ -95,7 +81,7 @@ async function loadCart() {
       return;
     }
     
-    const { data: items, error } = await supabase
+    const { data: items, error } = await supabaseClient
       .from('cart_items')
       .select(`
         id,
@@ -190,11 +176,8 @@ function renderCart() {
 // Обработка выбора способа оплаты
 paymentOptions.forEach(option => {
   option.addEventListener('click', function() {
-    // Убираем активный класс у всех
     paymentOptions.forEach(opt => opt.classList.remove('active'));
-    // Добавляем активный класс текущему
     this.classList.add('active');
-    // Получаем значение
     const radio = this.querySelector('input[type="radio"]');
     if (radio) {
       radio.checked = true;
@@ -203,11 +186,10 @@ paymentOptions.forEach(option => {
   });
 });
 
-// Оформление заказа
+// Оформление заказа - ИСПРАВЛЕНО
 async function handleCheckout() {
   try {
-    // Проверяем авторизацию
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
     
     if (sessionError || !session) {
       alert('Войдите в аккаунт для оформления заказа');
@@ -215,24 +197,19 @@ async function handleCheckout() {
       return;
     }
     
-    // Проверяем корзину
     if (!cartItems || cartItems.length === 0) {
       alert('Корзина пуста');
       return;
     }
     
-    // Получаем адрес
     let address = deliveryAddress.value.trim();
     if (!address) {
-      // Если адрес не указан, используем адрес самовывоза
       address = 'г. Санкт-Петербург, ул. Коллонтай, 21к1, 8 подъезд, 1 этаж';
     }
     
-    // Получаем телефон
     let phone = deliveryPhone.value.trim();
     if (!phone) {
-      // Если телефон не указан, берем из профиля
-      const { data: profile } = await supabase
+      const { data: profile } = await supabaseClient
         .from('profiles')
         .select('phone')
         .eq('id', session.user.id)
@@ -247,11 +224,9 @@ async function handleCheckout() {
       }
     }
     
-    // Блокируем кнопку
     checkoutBtn.disabled = true;
     checkoutBtn.innerHTML = '<span class="spinner"></span> Обработка...';
     
-    // Формируем данные заказа
     let totalAmount = 0;
     const orderItems = [];
     
@@ -280,7 +255,6 @@ async function handleCheckout() {
       });
     }
     
-    // Если выбран способ оплаты картой - создаем платеж через Robokassa
     if (selectedPayment === 'card') {
       const response = await fetch('/api/robokassa', {
         method: 'POST',
@@ -303,11 +277,9 @@ async function handleCheckout() {
         throw new Error(data.error || 'Ошибка создания платежа');
       }
       
-      // Перенаправляем на Robokassa
       window.location.href = data.url;
       
     } else {
-      // Оплата наличными - создаем заказ в БД
       const orderData = {
         user_id: session.user.id,
         items: orderItems,
@@ -320,8 +292,7 @@ async function handleCheckout() {
         created_at: new Date().toISOString()
       };
       
-      // Сохраняем заказ в БД
-      const { data: order, error: orderError } = await supabase
+      const { data: order, error: orderError } = await supabaseClient
         .from('orders')
         .insert(orderData)
         .select()
@@ -329,15 +300,13 @@ async function handleCheckout() {
       
       if (orderError) throw orderError;
       
-      // Очищаем корзину
-      const { error: clearError } = await supabase
+      const { error: clearError } = await supabaseClient
         .from('cart_items')
         .delete()
         .eq('user_id', session.user.id);
       
       if (clearError) throw clearError;
       
-      // Показываем сообщение об успехе
       alert('Заказ успешно оформлен! Ожидайте звонка от менеджера.');
       window.location.href = '/profile';
     }
@@ -353,9 +322,14 @@ async function handleCheckout() {
 
 // Инициализация
 document.addEventListener('DOMContentLoaded', async function() {
+  // Проверяем, что supabaseClient доступен
+  if (typeof supabaseClient === 'undefined') {
+    console.error('supabaseClient не определен! Проверьте подключение supabase.js');
+    alert('Ошибка подключения к базе данных. Пожалуйста, обновите страницу.');
+    return;
+  }
+  
   await loadUserProfile();
   await loadCart();
-  
-  // Обработчик кнопки оформления
   checkoutBtn.addEventListener('click', handleCheckout);
 });
