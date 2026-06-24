@@ -23,6 +23,7 @@ async function loadComponents() {
   }
 
   components = data;
+  console.log("Компоненты:", components);
 
   renderComponent("cpu");
   renderComponent("gpu");
@@ -90,6 +91,21 @@ function selectComponent(type, id) {
     components.find(c => c.id === id);
 
   build[type] = component;
+
+  function getTitle(type) {
+  const titles = {
+    cpu: "Процессор",
+    gpu: "Видеокарта",
+    ram: "Оперативная память",
+    motherboard: "Материнская плата",
+    cooler: "Охлаждение",
+    storage: "Накопитель",
+    psu: "Блок питания",
+    case: "Корпус"
+  };
+
+  return titles[type] || type;
+}
 
   document.getElementById(
     `summary${capitalize(type)}`
