@@ -232,17 +232,5 @@
 <!-- ПОДКЛЮЧАЕМ СКРИПТЫ В ПРАВИЛЬНОМ ПОРЯДКЕ -->
 <script src="/scripts/supabase.js"></script>
 <script src="/scripts/configurator.js"></script>
-
-<!-- ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА -->
-<script>
-  // Проверяем, что клиент инициализирован
-  document.addEventListener('DOMContentLoaded', function() {
-    if (typeof window.supabaseClient !== 'undefined') {
-      console.log('✅ Supabase клиент доступен глобально');
-    } else {
-      console.error('❌ Supabase клиент НЕ НАЙДЕН!');
-    }
-  });
-</script>
 </body>
 </html>
