@@ -1,15 +1,13 @@
-const build = {
-  cpu: null,
-  gpu: null,
-  ram: null,
-  motherboard: null,
-  cooler: null,
-  storage: null,
-  psu: null,
-  case: null
-};
+// В самом начале файла
+if (typeof supabaseClient === 'undefined') {
+  console.error('Supabase клиент не инициализирован!');
+  // Ждем инициализацию
+  setTimeout(() => {
+    console.log('Проверка supabaseClient:', typeof supabaseClient);
+  }, 1000);
+}
 
-// Функция getTitle должна быть определена ДО её использования
+// ===== 1. СНАЧАЛА ВСЕ ФУНКЦИИ =====
 function getTitle(type) {
   const titles = {
     cpu: "Процессор",
@@ -21,16 +19,30 @@ function getTitle(type) {
     psu: "Блок питания",
     case: "Корпус"
   };
-
   return titles[type] || type;
 }
 
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// ===== 2. ПОТОМ ДАННЫЕ =====
+const build = {
+  cpu: null,
+  gpu: null,
+  ram: null,
+  motherboard: null,
+  cooler: null,
+  storage: null,
+  psu: null,
+  case: null
+};
+
 let components = [];
 
+// ===== 3. ПОТОМ ОСТАЛЬНЫЕ ФУНКЦИИ =====
 function renderComponent(type) {
   const container = document.getElementById(`${type}Container`);
-  
-  // Проверка, существует ли контейнер
   if (!container) {
     console.error(`Контейнер ${type}Container не найден`);
     return;
@@ -64,30 +76,6 @@ function renderComponent(type) {
   `;
 }
 
-async function loadComponents() {
-  const { data, error } = await supabaseClient
-    .from("components")
-    .select("*")
-    .order("price");
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-
-  components = data;
-  console.log("Компоненты:", components);
-
-  renderComponent("cpu");
-  renderComponent("gpu");
-  renderComponent("ram");
-  renderComponent("motherboard");
-  renderComponent("cooler");
-  renderComponent("storage");
-  renderComponent("psu");
-  renderComponent("case");
-}
-
 function toggleDropdown(type) {
   const dropdown = document.getElementById(`${type}Dropdown`);
   if (dropdown) {
@@ -112,10 +100,6 @@ function selectComponent(type, id) {
   if (dropdown) {
     dropdown.classList.add("hidden");
   }
-}
-
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 function updatePrice() {
@@ -222,5 +206,29 @@ async function addToCart() {
   window.location.href = "/cart";
 }
 
-// Загрузка компонентов после загрузки DOM
+// ===== 4. В САМОМ КОНЦЕ - ЗАГРУЗКА =====
+async function loadComponents() {
+  const { data, error } = await supabaseClient
+    .from("components")
+    .select("*")
+    .order("price");
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  components = data;
+  console.log("Компоненты:", components);
+
+  renderComponent("cpu");
+  renderComponent("gpu");
+  renderComponent("ram");
+  renderComponent("motherboard");
+  renderComponent("cooler");
+  renderComponent("storage");
+  renderComponent("psu");
+  renderComponent("case");
+}
+
 document.addEventListener("DOMContentLoaded", loadComponents);
