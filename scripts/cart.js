@@ -430,7 +430,7 @@ window.checkout = async function() {
     localStorage.setItem('checkout_timestamp', Date.now().toString());
     
     // Перенаправляем на страницу оформления заказа
-    window.location.href = '/opl.html';
+    window.location.href = '/opl';
     
   } catch (err) {
     console.error('Ошибка оформления заказа:', err);
