@@ -93,11 +93,11 @@ function renderComputersList(computers) {
     div.className = 'product-card bg-[#1a1b1f] border border-gray-800 rounded-2xl p-3 hover:border-gray-700 transition'
     div.innerHTML = `
       <div class="relative">
-        <img src="${pc.image || '/src/img/placeholder.webp'}" 
+        <img src="${pc.image || '/src/img/defoult.webp'}" 
              loading="lazy"
              class="product-image"
              alt="${escapeHtml(pc.title)}"
-             onerror="this.src='/src/img/placeholder.webp'">
+             onerror="this.src='/src/img/defoult.webp'">
         ${!pc.published ? '<span class="absolute top-2 right-2 bg-yellow-600 text-xs px-2 py-1 rounded-full">Черновик</span>' : ''}
       </div>
       <div class="mt-3">

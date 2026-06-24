@@ -327,7 +327,7 @@ async function handleCheckout() {
       if (clearError) throw clearError;
       
       // 4. Показываем сообщение об успехе
-      alert('✅ Заказ успешно оформлен! Ожидайте звонка от менеджера.');
+      alert('Заказ успешно оформлен! Ожидайте письмо на почту.');
       window.location.href = '/profile';
     }
     
